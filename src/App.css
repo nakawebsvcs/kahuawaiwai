@@ -1,0 +1,105 @@
+.App {
+  text-align: center;
+}
+
+.bree-serif-regular {
+  font-family: "Bree Serif", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.title-bar {
+  background-color: #03aa22;
+  color: white;
+  padding: 1.5rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+}
+
+.title-text {
+  color: white;
+  font-size: 3rem;
+  font-family: "Bree Serif", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.title-text:hover {
+  color: white;
+  text-decoration: none;
+}
+
+.nav-tracker {
+  background-color: #bbc3bf;
+  padding: 0.8rem 1rem;
+  position: fixed;
+  width: 100%;
+  z-index: 1400;
+  margin-top: 12.5rem;
+}
+
+.content-area {
+  padding: 2rem;
+  width: 100%;
+  margin-top: 14rem;
+}
+
+.drawer-container {
+  margin-top: 16.5rem;
+  padding: 1rem;
+  background-color: #fff;
+  border-right: 1px solid #e0e0e0;
+}
+
+.chapter-link {
+  text-decoration: none;
+  color: #333;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.chapter-content {
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  max-height: 0; /* Start collapsed */
+}
+.chapter-content.collapsed {
+  max-height: 0;
+}
+
+.chapter-content.expanded {
+  max-height: 500px; /* Adjust based on your content size */
+}
+
+.chevron-icon {
+  display: inline-block;
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+}
+
+.chevron-icon.expanded {
+  transform: rotate(90deg);
+}
+
+.chapter-link:hover {
+  background-color: #f5f5f5;
+}
+
+.page-link {
+  font-size: 0.9em;
+  padding: 0.3rem 1rem !important;
+  color: #666;
+}
+
+.page-link:hover {
+  color: #000;
+  background-color: #f8f9fa;
+}
