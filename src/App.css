@@ -19,7 +19,7 @@
   position: fixed;
   width: 100%;
   top: 0;
-  z-index: 1300;
+  z-index: 1000;
   display: flex;
   align-items: center;
 }
@@ -42,7 +42,7 @@
   padding: 0.8rem 1rem;
   position: fixed;
   width: 100%;
-  z-index: 1400;
+  z-index: 900;
   margin-top: 12.5rem;
 }
 
@@ -69,14 +69,14 @@
 .chapter-content {
   overflow: hidden;
   transition: max-height 0.3s ease-out;
-  max-height: 0; /* Start collapsed */
+  max-height: 0;
 }
 .chapter-content.collapsed {
   max-height: 0;
 }
 
 .chapter-content.expanded {
-  max-height: 500px; /* Adjust based on your content size */
+  max-height: 500px;
 }
 
 .chevron-icon {
@@ -152,4 +152,26 @@
   display: flex;
   justify-content: center;
   width: 100%;
+}
+
+/* Search Bar */
+
+.search-container {
+  width: 300px;
+}
+
+.search-results {
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1100;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.search-result {
+  cursor: pointer;
+}
+
+.search-result:hover {
+  background-color: #f8f9fa;
 }

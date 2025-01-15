@@ -3,7 +3,12 @@ export const chapters = [
     id: 0,
     title: "Introduction",
     pages: [
-      { id: 1, title: "Welcome", content: "Welcome to the introduction." },
+      {
+        id: 1,
+        title: "Welcome",
+        video: require("../assets/kh_robot_animation.mp4"),
+        content: "Welcome to the introduction.",
+      },
       { id: 2, title: "Overview", content: "Course overview." },
       { id: 3, title: "Goals", content: "Learning goals." },
       { id: 4, title: "Requirements", content: "Course requirements." },

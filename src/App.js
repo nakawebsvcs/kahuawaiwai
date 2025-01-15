@@ -13,6 +13,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "./App.css";
 import { chapters } from "./components/chapters";
 import Login from "./components/Login";
+import SearchBar from "./components/SearchBar";
 
 function NavigationTracker() {
   const location = useLocation();
@@ -54,6 +55,7 @@ function App() {
               Kahua Waiwai: <br /> Building a Foundation of Wealth
             </Navbar.Brand>
           </Container>
+          <SearchBar />
         </Navbar>
 
         <NavigationTracker />
