@@ -1,18 +1,18 @@
-import React from "react";
+import { React, useState } from "react";
 import {
   BrowserRouter as Router,
   Route,
   Routes,
   useLocation,
 } from "react-router-dom";
-import { Navbar, Container, Nav } from "react-bootstrap";
-import Chapter from "./components/Chapter";
+import { Navbar, Container } from "react-bootstrap";
 import TableOfContents from "./components/TableOfContents";
 import Page from "./components/Page";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./App.css";
 import { chapters } from "./components/chapters";
+import Login from "./components/Login";
 
 function NavigationTracker() {
   const location = useLocation();
@@ -35,6 +35,16 @@ function NavigationTracker() {
 }
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  if (!isAuthenticated) {
+    return <Login onLogin={handleLogin} />;
+  }
+
   return (
     <Router>
       <div className="d-flex flex-column min-vh-100">
