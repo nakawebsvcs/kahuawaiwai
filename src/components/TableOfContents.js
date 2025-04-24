@@ -23,8 +23,10 @@ const TableOfContents = ({ chapters }) => {
             onClick={() => toggleChapter(chapter.id)}
           >
             <i
-              className={`bi bi-chevron-right ${
-                expandedChapters[chapter.id] ? "expanded" : ""
+              className={`bi ${
+                expandedChapters[chapter.id]
+                  ? "bi-chevron-down"
+                  : "bi-chevron-right"
               }`}
             ></i>
             <span className="ms-2">{chapter.title}</span>
