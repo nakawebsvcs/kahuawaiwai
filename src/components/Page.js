@@ -76,9 +76,9 @@ function Page({ chapter, page }) {
   };
 
   return (
-    <div className="mt-4">
+    <div style={{ marginTop: "4rem" }}>
       <h2>{chapter.title}</h2>
-      <h4>{page.title}</h4>
+      <h4 style={{ padding: "1rem 0" }}>{page.title}</h4>
 
       {renderMedia()}
 

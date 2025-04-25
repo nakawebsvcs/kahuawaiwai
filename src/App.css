@@ -59,6 +59,21 @@
   border-right: 1px solid #e0e0e0;
 }
 
+/* Mobile drawer toggle button */
+.drawer-toggle {
+  display: none;
+  position: fixed;
+  left: 10px;
+  top: 80px;
+  z-index: 1001;
+  background-color: #03aa22;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
 .chapter-link {
   text-decoration: none;
   color: #333;
@@ -96,12 +111,104 @@
 .page-link {
   font-size: 0.9em;
   padding: 0.3rem 1rem !important;
-  color: #666;
+  color: #303030;
 }
 
 .page-link:hover {
   color: #000;
   background-color: #f8f9fa;
+}
+
+/* Media queries for mobile responsiveness */
+@media (max-width: 768px) {
+  /* Drawer toggle improvements */
+  .drawer-toggle {
+    display: block;
+    top: auto; /* Reset top positioning */
+    bottom: 37.5rem;; /* Position at bottom of navbar */
+    left: 15px;
+    z-index: 1100;
+  }
+  
+  /* Title bar improvements */
+  .title-bar {
+    padding: 0.8rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    height: auto; /* Allow height to adjust based on content */
+    min-height: 80px; /* Ensure minimum height */
+  }
+  
+  .title-text {
+    font-size: 1.8rem;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Hide the text in navtracker but keep the search bar */
+  .nav-tracker .text-body {
+    display: none !important; /* This targets the span with className="text-body" */
+  }
+  
+  /* Adjust the navtracker layout for mobile */
+  .nav-tracker {
+    display: flex;
+    justify-content: center !important; /* Override the justify-content-between */
+    padding: 1rem;
+    position: fixed;
+    top: 10.5rem;
+    margin-top: 0;
+    width: 100%;
+    z-index: 899;
+  }
+  
+  /* Make search bar take appropriate width */
+  .nav-tracker .search-container {
+    width: 100%;
+    max-width: 300px;
+    margin: 0;
+  }
+  
+  /* Content area adjustments */
+  .content-area {
+    margin-top: 15rem; /* Adjust based on combined height of navbar and navtracker */
+    padding: 1rem 0.5rem;
+  }
+  
+  .drawer-container {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 80%;
+    max-width: 300px;
+    transform: translateX(-100%);
+    z-index: 1050;
+    overflow-y: auto;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    margin-top: 0; /* Remove the large margin on mobile */
+    padding-top: 130px; /* Adjust to match content-area margin-top */
+  }
+  
+  .drawer-container.open {
+    transform: translateX(0);
+  }
+  
+  .drawer-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+  }
+  
+  .drawer-backdrop.visible {
+    display: block;
+  }
 }
 
 /* Login page */
@@ -189,5 +296,32 @@
   max-width: 100%;
   height: auto;
   border-radius: 4px;
+}
+
+/* Logout button styling */
+.logout-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-right: 1rem;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
