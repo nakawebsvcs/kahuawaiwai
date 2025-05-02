@@ -105,11 +105,14 @@ function MainContent({ chapters, isAdmin, handleLogout }) {
               <>
                 <div className="nav-tracker d-flex justify-content-between align-items-center">
                   <span className="text-body">Admin Panel</span>
-                  <SearchBar />
+                  {/* Remove SearchBar component */}
                 </div>
                 <div className="d-flex flex-grow-1">
-                  <TableOfContents chapters={chapters} />
-                  <main className="content-area">
+                  {/* Remove TableOfContents component */}
+                  <main
+                    className="content-area"
+                    style={{ marginLeft: 0, width: "100%" }}
+                  >
                     <Container>
                       <AdminPanel />
                     </Container>
@@ -169,21 +172,21 @@ function App() {
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
-    const isDevelopment = process.env.NODE_ENV === "development";
-    const urlParams = new URLSearchParams(window.location.search);
-    const shouldBypass = urlParams.get("bypass") === "true";
+    // const isDevelopment = process.env.NODE_ENV === "development";
+    //const urlParams = new URLSearchParams(window.location.search);
+    // const shouldBypass = urlParams.get("bypass") === "true";
 
     // For development only: bypass authentication if requested via URL parameter
-    if (isDevelopment && shouldBypass) {
-      console.log(
-        "Development mode: Bypassing authentication via URL parameter"
-      );
-      setIsAuthenticated(true);
-      setIsAdmin(true); // Set to true if you want admin access
-      setAuthLoading(false);
-      fetchChapters();
-      return () => {}; // Empty cleanup function
-    }
+    // if (isDevelopment && shouldBypass) {
+      //console.log(
+    //    "Development mode: Bypassing authentication via URL parameter"
+      //);
+   //   setIsAuthenticated(true);
+   //   setIsAdmin(true); // Set to true if you want admin access
+   //   setAuthLoading(false);
+  //    fetchChapters();
+   //   return () => {}; // Empty cleanup function
+ //   }
 
     // Normal authentication flow
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -196,6 +199,12 @@ function App() {
           const userDoc = await getDoc(doc(db, "users", user.uid));
           if (userDoc.exists() && userDoc.data().role === "admin") {
             setIsAdmin(true);
+            // Redirect admin users to the admin panel
+            // Check if we're not already on the admin page to avoid redirect loops
+            if (window.location.pathname !== "/admin") {
+              window.location.href = "/admin";
+              return; // Exit early since we're redirecting
+            }
           } else {
             setIsAdmin(false);
           }

@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+
 admin.initializeApp();
 
 // Create a new user (admin only)
@@ -59,6 +60,7 @@ exports.createUser = functions.https.onCall(async (data, context) => {
 
     return { success: true, uid: userRecord.uid };
   } catch (error) {
+    console.error("Error creating user:", error);
     throw new functions.https.HttpsError("internal", error.message);
   }
 });
@@ -105,6 +107,7 @@ exports.deleteUser = functions.https.onCall(async (data, context) => {
 
     return { success: true };
   } catch (error) {
+    console.error("Error deleting user:", error);
     throw new functions.https.HttpsError("internal", error.message);
   }
 });
@@ -148,6 +151,7 @@ exports.getUsers = functions.https.onCall(async (data, context) => {
 
     return { users };
   } catch (error) {
+    console.error("Error fetching users:", error);
     throw new functions.https.HttpsError("internal", error.message);
   }
 });
