@@ -114,13 +114,19 @@ exports.deleteUser = functions.https.onCall(async (data, context) => {
 
 // Get all users (admin only)
 exports.getUsers = functions.https.onCall(async (data, context) => {
+  console.log("getUsers called");
+  console.log("Context auth:", context.auth); // Log the auth object
+
   // Check if the request is made by an authenticated user
   if (!context.auth) {
+    console.warn("Authentication required: context.auth is null"); // Add log here
     throw new functions.https.HttpsError(
       "unauthenticated",
       "Authentication required"
     );
   }
+
+  console.log("User is authenticated. UID:", context.auth.uid); // Log if authenticated
 
   // Verify the caller is an admin
   const callerUid = context.auth.uid;

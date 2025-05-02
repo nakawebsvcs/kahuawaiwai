@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { auth } from "../firebase";
+import { functions, auth } from "../firebase"; // Assuming these are initialized correctly here
 import { signOut } from "firebase/auth";
 import {
   Container,
@@ -20,80 +20,86 @@ function AdminPanel() {
   const [newUserEmail, setNewUserEmail] = useState("");
   const [newUserPassword, setNewUserPassword] = useState("");
   const [newUserRole, setNewUserRole] = useState("user");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start loading state as we'll fetch on auth state change
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [authReady, setAuthReady] = useState(false); // Track if the auth state is ready
-  const functions = getFunctions();
+  // Removed authReady state
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setAuthReady(true); // Set authReady to true when the user is authenticated
-        console.log("User is authenticated:", user.email);
-      } else {
-        setAuthReady(false);
-      }
-    });
-
-    return () => unsubscribe(); // Clean up the listener
-  }, []);
-
-  // Ensure authentication is ready before making function calls
-  const ensureAuthenticated = async () => {
-    const user = auth.currentUser;
-    if (user) {
-      try {
-        await user.getIdToken(true); // Force token refresh to ensure we have a fresh token
-        console.log("Authentication confirmed for user:", user.email);
-        return true;
-      } catch (error) {
-        console.error("Error refreshing token:", error);
-        throw new Error("Authentication error");
-      }
-    } else {
-      throw new Error("User not authenticated");
-    }
-  };
+  // Removed ensureAuthenticated function - rely on httpsCallable
 
   // Fetch users using the Cloud Function
   const fetchUsers = async () => {
-    setLoading(true);
+    // setLoading(true); // Loading handled by the auth state change useEffect
     setError(null);
 
     try {
-      const user = auth.currentUser;
-      if (user) {
-        const idToken = await user.getIdToken(true); // Ensure the ID token is fresh
-
-        const getUsersFunction = httpsCallable(functions, "getUsers");
-        const result = await getUsersFunction({ idToken }); // Pass the ID token to the function
-        const fetchedUsers = result.data.users || [];
-        setUsers(fetchedUsers);
-        setFilteredUsers(fetchedUsers);
+      // Add logs here!
+      console.log("Inside fetchUsers. auth.currentUser:", auth.currentUser);
+      if (auth.currentUser) {
+        console.log("Inside fetchUsers. Attempting to get ID token...");
+        const idToken = await auth.currentUser.getIdToken();
+        console.log(
+          "Inside fetchUsers. Got ID token (first few chars):",
+          idToken ? idToken.substring(0, 10) + "..." : "none"
+        );
       } else {
-        throw new Error("User not authenticated");
+        console.log("Inside fetchUsers. auth.currentUser is null.");
       }
+
+      const getUsersFunction = httpsCallable(functions, "getUsers");
+      console.log("Attempting to call getUsers Cloud Function..."); // Keep this log
+      const result = await getUsersFunction();
+      console.log("Function result:", result);
+      const fetchedUsers = result.data.users || [];
+      setUsers(fetchedUsers);
+      setFilteredUsers(fetchedUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
-      setError("Failed to load users: " + error.message);
+      if (error.code === "functions/unauthenticated") {
+        setError("Authentication failed. Please log in again.");
+        // Consider logging out or redirecting the user here if this happens often
+        // handleLogout();
+      } else {
+        setError("Failed to load users: " + error.message);
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  // Primary useEffect to handle auth state changes and initial fetch
   useEffect(() => {
-    // Wait until auth is ready before fetching users
-    if (authReady) {
-      const timer = setTimeout(() => {
+    console.log("Setting up auth state listener...");
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      console.log(
+        "Auth state changed. Current user:",
+        user ? user.email : "none"
+      );
+      if (user) {
+        // User is signed in. Now it's safe to attempt fetching data.
+        // The httpsCallable should now have access to the user's token.
+        console.log("User authenticated, attempting initial fetch...");
+        setLoading(true); // Indicate loading while fetching
         fetchUsers();
-      }, 1000);
+      } else {
+        // User is signed out. Clear user data and stop loading.
+        console.log("User signed out.");
+        setUsers([]);
+        setFilteredUsers([]);
+        setLoading(false);
+        setError("Please sign in to view user data.");
+        // Optional: Redirect to login page
+      }
+    });
 
-      return () => clearTimeout(timer);
-    }
-  }, [authReady]);
+    // Clean up the listener when the component unmounts
+    return () => {
+      console.log("Cleaning up auth state listener.");
+      unsubscribe();
+    };
+  }, []); // Empty dependency array means this runs once on mount and cleans up on unmount
 
-  // Filter users based on search term
+  // Filter users based on search term - this effect looks good
   useEffect(() => {
     if (searchTerm.trim() === "") {
       setFilteredUsers(users);
@@ -111,33 +117,38 @@ function AdminPanel() {
   // Create a new user using the Cloud Function
   const createUser = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setLoading(true); // Can have separate loading states if needed, but general loading is fine for now
     setError(null);
     setSuccess(null);
 
+    // httpsCallable handles authentication implicitly.
+    // If the user isn't authenticated, the function will fail server-side with 'unauthenticated'.
+    // The error handling below will catch it.
     try {
-      const user = auth.currentUser;
-      if (user) {
-        const idToken = await user.getIdToken(true); // Ensure the ID token is fresh
+      console.log("Attempting to call createUser Cloud Function...");
+      const createUserFunction = httpsCallable(functions, "createUser");
+      await createUserFunction({
+        email: newUserEmail,
+        password: newUserPassword,
+        role: newUserRole,
+      });
 
-        const createUserFunction = httpsCallable(functions, "createUser");
-        await createUserFunction({
-          email: newUserEmail,
-          password: newUserPassword,
-          role: newUserRole,
-          idToken, // Pass the ID token to the function
-        });
-
-        setSuccess("User created successfully!");
-        setNewUserEmail("");
-        setNewUserPassword("");
-        fetchUsers();
-      } else {
-        throw new Error("User not authenticated");
-      }
+      setSuccess("User created successfully!");
+      setNewUserEmail("");
+      setNewUserPassword("");
+      // Refetch users after successful creation
+      fetchUsers();
     } catch (error) {
       console.error("Error creating user:", error);
-      setError("Failed to create user: " + error.message);
+      if (error.code === "functions/unauthenticated") {
+        setError("Authentication failed to create user. Please log in again.");
+        // Optional: Redirect to login page or trigger logout
+        // handleLogout();
+      } else if (error.code === "functions/permission-denied") {
+        setError("Permission denied to create user.");
+      } else {
+        setError("Failed to create user: " + error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -146,25 +157,36 @@ function AdminPanel() {
   // Delete a user using the Cloud Function
   const handleDeleteUser = async (userId) => {
     if (window.confirm(`Are you sure you want to delete this user?`)) {
-      setLoading(true);
+      setLoading(true); // Can have separate loading states if needed
       setError(null);
       setSuccess(null);
 
+      // httpsCallable handles authentication implicitly.
+      // If the user isn't authenticated, the function will fail server-side with 'unauthenticated'.
+      // The error handling below will catch it.
       try {
-        if (authReady) {
-          await ensureAuthenticated();
+        console.log(
+          `Attempting to call deleteUser Cloud Function for UID: ${userId}`
+        );
+        const deleteUserFunction = httpsCallable(functions, "deleteUser");
+        await deleteUserFunction({ uid: userId });
 
-          const deleteUserFunction = httpsCallable(functions, "deleteUser");
-          await deleteUserFunction({ uid: userId });
-
-          setSuccess("User deleted successfully");
-          fetchUsers();
-        } else {
-          throw new Error("User not authenticated");
-        }
+        setSuccess("User deleted successfully");
+        // Refetch users after successful deletion
+        fetchUsers();
       } catch (error) {
         console.error("Error deleting user:", error);
-        setError("Failed to delete user: " + error.message);
+        if (error.code === "functions/unauthenticated") {
+          setError(
+            "Authentication failed to delete user. Please log in again."
+          );
+          // Optional: Redirect to login page or trigger logout
+          // handleLogout();
+        } else if (error.code === "functions/permission-denied") {
+          setError("Permission denied to delete user.");
+        } else {
+          setError("Failed to delete user: " + error.message);
+        }
       } finally {
         setLoading(false);
       }
@@ -173,20 +195,23 @@ function AdminPanel() {
 
   const handleLogout = async () => {
     try {
+      console.log("Signing out...");
       await signOut(auth);
-      // Redirect will be handled by your app's auth state listener
+      console.log("Sign out successful.");
+      // The component rendering based on auth state will likely handle
+      // redirecting the user after sign out is complete.
     } catch (error) {
       console.error("Error signing out:", error);
-      setError("Error signing out");
+      setError("Error signing out: " + error.message); // Add error message detail
     }
   };
 
   return (
-    <Container fluid className="admin-panel">
+    <Container fluid className="admin-panel" style={{ paddingTop: "2rem" }}>
       <Row className="mb-4">
         <Col>
           <div className="d-flex justify-content-between align-items-center">
-            <h2>User Management</h2>
+            <h2 className="mt-2">User Management</h2>
             <Button
               variant="outline-secondary"
               onClick={handleLogout}
