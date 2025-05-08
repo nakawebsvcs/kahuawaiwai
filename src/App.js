@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import { Navbar, Container } from "react-bootstrap";
 import TableOfContents from "./components/TableOfContents";
+import Footer from "./components/Footer";
 import Page from "./components/Page";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -152,6 +153,7 @@ function MainContent({ chapters, isAdmin, handleLogout }) {
           }
         />
       </Routes>
+      <Footer />
     </div>
   );
 }

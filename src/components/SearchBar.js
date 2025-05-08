@@ -96,11 +96,19 @@ function SearchBar() {
   };
 
   const handleResultClick = (chapterId, pageId) => {
-    console.log(`Navigating to chapter/${chapterId}/${pageId}`);
-    navigate(`/chapter/${chapterId}/${pageId}`);
+    console.log(
+      `Navigating to chapter/${chapterId}/${pageId} with search term: ${searchTerm}`
+    );
+    // Pass the search term as a query parameter
+    navigate(
+      `/chapter/${chapterId}/${pageId}?highlight=${encodeURIComponent(
+        searchTerm
+      )}`
+    );
     setSearchTerm("");
     setSearchResults([]);
   };
+
 
   return (
     <div className="search-container position-relative">

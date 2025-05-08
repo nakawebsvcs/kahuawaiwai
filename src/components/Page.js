@@ -1,6 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 function Page({ chapter, page }) {
+  const location = useLocation();
+  const [highlightedContent, setHighlightedContent] = useState(page.content);
+
+  // Extract search term from URL query parameters
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const highlightTerm = queryParams.get("highlight");
+
+    if (page.content) {
+      // First replace newlines with <br> tags
+      let processedContent = page.content.replace(/\n/g, "<br>");
+
+      // Then highlight the search term if it exists
+      if (highlightTerm) {
+        // Create a case-insensitive regular expression for the search term
+        const regex = new RegExp(
+          `(${highlightTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+          "gi"
+        );
+
+        // Replace occurrences with highlighted version
+        processedContent = processedContent.replace(
+          regex,
+          '<span class="search-highlight">$1</span>'
+        );
+      }
+
+      setHighlightedContent(processedContent);
+    } else {
+      setHighlightedContent("");
+    }
+  }, [location.search, page.content]);
+
   // Function to resolve the media URL
   const getMediaUrl = (mediaPath) => {
     if (!mediaPath) return null;
@@ -94,9 +128,7 @@ function Page({ chapter, page }) {
       {renderMedia()}
       <div
         className="mt-3"
-        dangerouslySetInnerHTML={{
-          __html: page.content.replace(/\n/g, "<br><br>"),
-        }}
+        dangerouslySetInnerHTML={{ __html: highlightedContent }}
       />
     </div>
   );
