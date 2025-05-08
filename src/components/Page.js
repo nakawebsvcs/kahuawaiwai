@@ -32,6 +32,18 @@ function Page({ chapter, page }) {
     console.log(`Resolved URL: ${resolvedUrl}`);
 
     if (type === "video") {
+      // Special case for the robot animation
+      if (url.includes("kh_robot_animation.mp4")) {
+        return (
+          <div className="video-container">
+            <video width="100%" autoPlay loop muted playsInline>
+              <source src={resolvedUrl} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        );
+      }
+
       // Handle YouTube videos
       if (url.includes("youtube.com") || url.includes("youtu.be")) {
         // YouTube handling code...
@@ -79,10 +91,13 @@ function Page({ chapter, page }) {
     <div style={{ marginTop: "4rem" }}>
       <h2>{chapter.title}</h2>
       <h4 style={{ padding: "1rem 0" }}>{page.title}</h4>
-
       {renderMedia()}
-
-      <div className="mt-3">{page.content}</div>
+      <div
+        className="mt-3"
+        dangerouslySetInnerHTML={{
+          __html: page.content.replace(/\n/g, "<br><br>"),
+        }}
+      />
     </div>
   );
 }

@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { db } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
+
+// Import chapter data
+import chapter0 from "../data/chapters/chapter0.json";
+import chapter1 from "../data/chapters/chapter1.json";
+import chapter2 from "../data/chapters/chapter2.json";
+import chapter3 from "../data/chapters/chapter3.json";
 
 function SearchBar() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -10,107 +14,81 @@ function SearchBar() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch chapters from Firestore when component mounts
+  // Load chapters from JSON files when component mounts
   useEffect(() => {
-    const fetchChapters = async () => {
-      try {
-        console.log("Fetching chapters for search...");
-        const chaptersCollection = collection(db, "chapters");
-        const chaptersSnapshot = await getDocs(chaptersCollection);
+    try {
+      console.log("Loading chapters for search from JSON files");
 
-        const chaptersData = [];
+      // Format the JSON data to match the structure expected by the search
+      const chaptersData = [
+        {
+          id: "Introduction: Managing Resources Yesterday, Today, & Tomorrow",
+          title: chapter0.title,
+          pages: chapter0.pages,
+        },
+        {
+          id: "Lesson 1: Show Me the Money",
+          title: chapter1.title,
+          pages: chapter1.pages,
+        },
+        {
+          id: "Lesson 2: Savin' Up",
+          title: chapter2.title,
+          pages: chapter2.pages,
+        },
+        {
+          id: "Lesson 3: Dat's My Bank",
+          title: chapter3.title,
+          pages: chapter3.pages,
+        },
+      ];
 
-        // Process each chapter document
-        for (const chapterDoc of chaptersSnapshot.docs) {
-          const chapterData = chapterDoc.data();
-          console.log(`Processing chapter: ${chapterDoc.id}`, chapterData);
-
-          // Get pages subcollection
-          const pagesCollection = collection(
-            db,
-            "chapters",
-            chapterDoc.id,
-            "pages"
-          );
-          const pagesSnapshot = await getDocs(pagesCollection);
-
-          // Extract pages data
-          const pages = pagesSnapshot.docs.map((pageDoc) => {
-            const pageData = pageDoc.data();
-            return {
-              id: parseInt(pageDoc.id),
-              title: pageData.title || "",
-              content: pageData.content || "",
-              // Include other page properties as needed
-            };
-          });
-
-          console.log(
-            `Found ${pages.length} pages for chapter ${chapterDoc.id}`
-          );
-
-          // Add chapter with its pages to the array
-          chaptersData.push({
-            id: chapterDoc.id,
-            title: chapterData.title || "",
-            pages: pages,
-          });
-        }
-
-        console.log("Chapters loaded for search:", chaptersData);
-        setChapters(chaptersData);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching chapters for search:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchChapters();
+      console.log("Chapters loaded for search:", chaptersData);
+      setChapters(chaptersData);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error loading chapters for search:", error);
+      setLoading(false);
+    }
   }, []);
 
   const handleSearch = (e) => {
     const term = e.target.value;
     setSearchTerm(term);
-    console.log("Search term:", term);
-    console.log("Chapters available for search:", chapters);
 
     if (term.length > 2 && chapters.length > 0) {
-      const results = chapters
-        .flatMap((chapter) => {
-          if (!chapter.pages || !Array.isArray(chapter.pages)) {
-            console.warn(
-              `Chapter ${chapter.id} has no pages or pages is not an array`
-            );
-            return [];
-          }
+      // Create a more efficient search
+      const results = [];
 
-          return chapter.pages.map((page) => {
-            const chapterTitle = chapter.title || "";
-            const pageTitle = page.title || "";
-            const pageContent = page.content || "";
+      chapters.forEach((chapter) => {
+        if (!chapter.pages || !Array.isArray(chapter.pages)) {
+          console.warn(
+            `Chapter ${chapter.id} has no pages or pages is not an array`
+          );
+          return;
+        }
 
-            const searchText =
-              `${chapterTitle} ${pageTitle} ${pageContent}`.toLowerCase();
-            const termLower = term.toLowerCase();
+        const termLower = term.toLowerCase();
 
-            const isMatch = searchText.includes(termLower);
-            console.log(
-              `Checking ${chapter.id}-${page.id}: ${
-                isMatch ? "MATCH" : "no match"
-              }`
-            );
+        chapter.pages.forEach((page) => {
+          const chapterTitle = chapter.title || "";
+          const pageTitle = page.title || "";
+          const pageContent = page.content || "";
 
-            return {
+          const searchText =
+            `${chapterTitle} ${pageTitle} ${pageContent}`.toLowerCase();
+
+          if (searchText.includes(termLower)) {
+            results.push({
               chapter,
               page,
-              match: isMatch,
-            };
-          });
-        })
-        .filter((result) => result.match);
+              match: true,
+            });
+          }
+        });
+      });
 
-      console.log("Search results:", results);
+      console.log(`Found ${results.length} search results for "${term}"`);
       setSearchResults(results);
     } else {
       setSearchResults([]);
@@ -136,7 +114,7 @@ function SearchBar() {
       />
 
       {searchResults.length > 0 && (
-        <div className="search-results position-absolute w-100 mt-1">
+        <div className="search-results position-absolute w-100 mt-1 shadow-sm">
           {searchResults.map(({ chapter, page }) => (
             <div
               key={`${chapter.id}-${page.id}`}
@@ -147,7 +125,8 @@ function SearchBar() {
               <div className="fw-bold text-dark">{chapter.title}</div>
               <div className="text-secondary">{page.title}</div>
               <div className="small text-muted">
-                {page.content?.substring(0, 100)}...
+                {page.content?.substring(0, 100)}
+                {page.content?.length > 100 ? "..." : ""}
               </div>
             </div>
           ))}
