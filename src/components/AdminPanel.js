@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { functions, auth } from "../firebase"; // Assuming these are initialized correctly here
+import { functions, auth } from "../firebase";
 import { signOut } from "firebase/auth";
 import {
   Container,
@@ -20,7 +20,7 @@ function AdminPanel() {
   const [newUserEmail, setNewUserEmail] = useState("");
   const [newUserPassword, setNewUserPassword] = useState("");
   const [newUserRole, setNewUserRole] = useState("user");
-  const [loading, setLoading] = useState(true); // Start loading state as we'll fetch on auth state change
+  const [loading, setLoading] = useState(true); // Start loading state as will fetch on auth state change
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   // Removed authReady state
@@ -28,44 +28,36 @@ function AdminPanel() {
   // Removed ensureAuthenticated function - rely on httpsCallable
 
   // Fetch users using the Cloud Function
-  const fetchUsers = async () => {
-    // setLoading(true); // Loading handled by the auth state change useEffect
-    setError(null);
+const fetchUsers = async () => {
+  setLoading(true);
+  setError(null);
 
-    try {
-      // Add logs here!
-      console.log("Inside fetchUsers. auth.currentUser:", auth.currentUser);
-      if (auth.currentUser) {
-        console.log("Inside fetchUsers. Attempting to get ID token...");
-        const idToken = await auth.currentUser.getIdToken();
-        console.log(
-          "Inside fetchUsers. Got ID token (first few chars):",
-          idToken ? idToken.substring(0, 10) + "..." : "none"
-        );
-      } else {
-        console.log("Inside fetchUsers. auth.currentUser is null.");
-      }
-
-      const getUsersFunction = httpsCallable(functions, "getUsers");
-      console.log("Attempting to call getUsers Cloud Function..."); // Keep this log
-      const result = await getUsersFunction();
-      console.log("Function result:", result);
-      const fetchedUsers = result.data.users || [];
-      setUsers(fetchedUsers);
-      setFilteredUsers(fetchedUsers);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      if (error.code === "functions/unauthenticated") {
-        setError("Authentication failed. Please log in again.");
-        // Consider logging out or redirecting the user here if this happens often
-        // handleLogout();
-      } else {
-        setError("Failed to load users: " + error.message);
-      }
-    } finally {
-      setLoading(false);
+  try {
+    // Force token refresh before making the call
+    if (auth.currentUser) {
+      await auth.currentUser.getIdToken(true); // true forces refresh
+    } else {
+      throw new Error("No authenticated user found");
     }
-  };
+
+    const getUsersFunction = httpsCallable(functions, "getUsers");
+    console.log("Attempting to call getUsers Cloud Function...");
+    const result = await getUsersFunction();
+    console.log("Function result:", result);
+    const fetchedUsers = result.data.users || [];
+    setUsers(fetchedUsers);
+    setFilteredUsers(fetchedUsers);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    if (error.code === "functions/unauthenticated") {
+      setError("Authentication failed. Please log in again.");
+    } else {
+      setError("Failed to load users: " + error.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Primary useEffect to handle auth state changes and initial fetch
   useEffect(() => {

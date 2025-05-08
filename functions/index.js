@@ -13,19 +13,24 @@ exports.createUser = functions.https.onCall(async (data, context) => {
     );
   }
 
-  // Verify the caller is an admin by checking their role in Firestore
-  const callerUid = context.auth.uid;
-  const callerDoc = await admin
-    .firestore()
-    .collection("users")
-    .doc(callerUid)
-    .get();
+  // Check for admin claim in token first, then fall back to Firestore check
+  if (!context.auth.token.admin) {
+    // Verify the caller is an admin by checking their role in Firestore
+    const callerUid = context.auth.uid;
+    const callerDoc = await admin
+      .firestore()
+      .collection("users")
+      .doc(callerUid)
+      .get();
 
-  if (!callerDoc.exists || callerDoc.data().role !== "admin") {
-    throw new functions.https.HttpsError(
-      "permission-denied",
-      "Admin privileges required"
-    );
+    if (!callerDoc.exists || callerDoc.data().role !== "admin") {
+      throw new functions.https.HttpsError(
+        "permission-denied",
+        "Admin privileges required"
+      );
+    }
+  } else {
+    console.log("User has admin claim in token");
   }
 
   // Validate input
@@ -55,8 +60,14 @@ exports.createUser = functions.https.onCall(async (data, context) => {
         email: data.email,
         role: data.role || "user",
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        createdBy: callerUid,
+        createdBy: context.auth.uid,
       });
+
+    // Set custom claims for admin users
+    if (data.role === "admin") {
+      await admin.auth().setCustomUserClaims(userRecord.uid, { admin: true });
+      console.log(`Set admin claim for user ${userRecord.uid}`);
+    }
 
     return { success: true, uid: userRecord.uid };
   } catch (error) {
@@ -75,19 +86,24 @@ exports.deleteUser = functions.https.onCall(async (data, context) => {
     );
   }
 
-  // Verify the caller is an admin
-  const callerUid = context.auth.uid;
-  const callerDoc = await admin
-    .firestore()
-    .collection("users")
-    .doc(callerUid)
-    .get();
+  // Check for admin claim in token first, then fall back to Firestore check
+  if (!context.auth.token.admin) {
+    // Verify the caller is an admin
+    const callerUid = context.auth.uid;
+    const callerDoc = await admin
+      .firestore()
+      .collection("users")
+      .doc(callerUid)
+      .get();
 
-  if (!callerDoc.exists || callerDoc.data().role !== "admin") {
-    throw new functions.https.HttpsError(
-      "permission-denied",
-      "Admin privileges required"
-    );
+    if (!callerDoc.exists || callerDoc.data().role !== "admin") {
+      throw new functions.https.HttpsError(
+        "permission-denied",
+        "Admin privileges required"
+      );
+    }
+  } else {
+    console.log("User has admin claim in token");
   }
 
   // Validate input
@@ -127,20 +143,29 @@ exports.getUsers = functions.https.onCall(async (data, context) => {
   }
 
   console.log("User is authenticated. UID:", context.auth.uid); // Log if authenticated
+  console.log("User token claims:", context.auth.token); // Log token claims for debugging
 
-  // Verify the caller is an admin
-  const callerUid = context.auth.uid;
-  const callerDoc = await admin
-    .firestore()
-    .collection("users")
-    .doc(callerUid)
-    .get();
+  // Check for admin claim in token first, then fall back to Firestore check
+  if (!context.auth.token.admin) {
+    console.log("No admin claim in token, checking Firestore...");
+    // Verify the caller is an admin
+    const callerUid = context.auth.uid;
+    const callerDoc = await admin
+      .firestore()
+      .collection("users")
+      .doc(callerUid)
+      .get();
 
-  if (!callerDoc.exists || callerDoc.data().role !== "admin") {
-    throw new functions.https.HttpsError(
-      "permission-denied",
-      "Admin privileges required"
-    );
+    if (!callerDoc.exists || callerDoc.data().role !== "admin") {
+      console.log("User is not admin in Firestore either");
+      throw new functions.https.HttpsError(
+        "permission-denied",
+        "Admin privileges required"
+      );
+    }
+    console.log("User is admin in Firestore");
+  } else {
+    console.log("User has admin claim in token");
   }
 
   try {

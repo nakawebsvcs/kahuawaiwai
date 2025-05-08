@@ -20,7 +20,7 @@ import { collection, getDocs, getDoc, doc } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import AdminPanel from "./components/AdminPanel";
 
-// Separate the NavigationTracker into its own component outside of App
+// Separate the NavigationTracker into its own component
 function NavigationTracker({ chapters }) {
   // Use useParams to get route parameters directly
   const params = useParams();
@@ -54,7 +54,7 @@ function NavigationTracker({ chapters }) {
   );
 }
 
-// Create a wrapper component for the main content
+// Wrapper component for the main content
 function MainContent({ chapters, isAdmin, handleLogout }) {
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -146,7 +146,7 @@ function MainContent({ chapters, isAdmin, handleLogout }) {
   );
 }
 
-// Create a component to render the page content based on URL parameters
+// Component to render the page content based on URL parameters
 function PageContent({ chapters }) {
   const { chapterId, pageId } = useParams();
   const parsedPageId = parseInt(pageId);
@@ -200,7 +200,7 @@ function App() {
           if (userDoc.exists() && userDoc.data().role === "admin") {
             setIsAdmin(true);
             // Redirect admin users to the admin panel
-            // Check if we're not already on the admin page to avoid redirect loops
+            // Check if not already on the admin page to avoid redirect loops
             if (window.location.pathname !== "/admin") {
               window.location.href = "/admin";
               return; // Exit early since we're redirecting

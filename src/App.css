@@ -216,7 +216,7 @@
 .login-container {
   height: 100vh; /* Set exact height to viewport height */
   width: 100%;
-  background-image: url("assets/cover-login-2.png");
+  background-image: url("assets/cover-login.png");
   background-size: 105%;
   background-position: center;
   background-repeat: no-repeat;
