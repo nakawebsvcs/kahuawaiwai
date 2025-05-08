@@ -204,13 +204,6 @@ const fetchUsers = async () => {
         <Col>
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="mt-2">User Management</h2>
-            <Button
-              variant="outline-secondary"
-              onClick={handleLogout}
-              className="logout-btn"
-            >
-              <i className="bi bi-box-arrow-right me-1"></i> Logout
-            </Button>
           </div>
         </Col>
       </Row>

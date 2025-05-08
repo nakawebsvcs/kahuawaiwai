@@ -370,7 +370,20 @@ function App() {
 
   // Show loading state while checking authentication
   if (authLoading) {
-    return <div className="loading">Checking authentication...</div>;
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="text-center p-4 bg-white rounded shadow-sm">
+          <div
+            className="spinner-border text-primary mb-3"
+            role="status"
+            style={{ width: "3rem", height: "3rem" }}
+          >
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <h5 className="mt-2">Checking authentication...</h5>
+        </div>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
@@ -378,7 +391,20 @@ function App() {
   }
 
   if (loading) {
-    return <div className="loading">Loading content...</div>;
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="text-center p-4 bg-white rounded shadow-sm">
+          <div
+            className="spinner-border text-primary mb-3"
+            role="status"
+            style={{ width: "3rem", height: "3rem" }}
+          >
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <h5 className="mt-2">Loading content...</h5>
+        </div>
+      </div>
+    );
   }
 
   return (
