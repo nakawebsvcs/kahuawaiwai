@@ -4,9 +4,12 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 
 // Create a new user (admin only)
-exports.createUser = functions.https.onCall(async (data, context) => {
+exports.createUser = functions.https.onCall(async (request) => {
+  console.log("createUser called");
+  console.log("request auth:", request.auth); // Log the auth object
+
   // Check if the request is made by an authenticated user
-  if (!context.auth) {
+  if (!request.auth) {
     throw new functions.https.HttpsError(
       "unauthenticated",
       "Authentication required"
@@ -14,9 +17,9 @@ exports.createUser = functions.https.onCall(async (data, context) => {
   }
 
   // Check for admin claim in token first, then fall back to Firestore check
-  if (!context.auth.token.admin) {
+  if (!request.auth.token.admin) {
     // Verify the caller is an admin by checking their role in Firestore
-    const callerUid = context.auth.uid;
+    const callerUid = request.auth.uid;
     const callerDoc = await admin
       .firestore()
       .collection("users")
@@ -34,7 +37,7 @@ exports.createUser = functions.https.onCall(async (data, context) => {
   }
 
   // Validate input
-  if (!data.email || !data.password) {
+  if (!request.data.email || !request.data.password) {
     throw new functions.https.HttpsError(
       "invalid-argument",
       "Email and password are required"
@@ -44,8 +47,8 @@ exports.createUser = functions.https.onCall(async (data, context) => {
   try {
     // Create the user in Firebase Auth
     const userRecord = await admin.auth().createUser({
-      email: data.email,
-      password: data.password,
+      email: request.data.email,
+      password: request.data.password,
       emailVerified: false,
       disabled: false,
     });
@@ -57,14 +60,14 @@ exports.createUser = functions.https.onCall(async (data, context) => {
       .doc(userRecord.uid)
       .set({
         uid: userRecord.uid,
-        email: data.email,
-        role: data.role || "user",
+        email: request.data.email,
+        role: request.data.role || "user",
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        createdBy: context.auth.uid,
+        createdBy: request.auth.uid,
       });
 
     // Set custom claims for admin users
-    if (data.role === "admin") {
+    if (request.auth.role === "admin") {
       await admin.auth().setCustomUserClaims(userRecord.uid, { admin: true });
       console.log(`Set admin claim for user ${userRecord.uid}`);
     }
@@ -77,9 +80,9 @@ exports.createUser = functions.https.onCall(async (data, context) => {
 });
 
 // Delete a user (admin only)
-exports.deleteUser = functions.https.onCall(async (data, context) => {
+exports.deleteUser = functions.https.onCall(async (request) => {
   // Check if the request is made by an authenticated user
-  if (!context.auth) {
+  if (!request.auth) {
     throw new functions.https.HttpsError(
       "unauthenticated",
       "Authentication required"
@@ -87,9 +90,9 @@ exports.deleteUser = functions.https.onCall(async (data, context) => {
   }
 
   // Check for admin claim in token first, then fall back to Firestore check
-  if (!context.auth.token.admin) {
+  if (!request.auth.token.admin) {
     // Verify the caller is an admin
-    const callerUid = context.auth.uid;
+    const callerUid = request.auth.uid;
     const callerDoc = await admin
       .firestore()
       .collection("users")
@@ -107,7 +110,7 @@ exports.deleteUser = functions.https.onCall(async (data, context) => {
   }
 
   // Validate input
-  if (!data.uid) {
+  if (!request.data.uid) {
     throw new functions.https.HttpsError(
       "invalid-argument",
       "User ID is required"
@@ -116,10 +119,10 @@ exports.deleteUser = functions.https.onCall(async (data, context) => {
 
   try {
     // Delete the user from Firebase Auth
-    await admin.auth().deleteUser(data.uid);
+    await admin.auth().deleteUser(request.data.uid);
 
     // Delete the user document from Firestore
-    await admin.firestore().collection("users").doc(data.uid).delete();
+    await admin.firestore().collection("users").doc(request.data.uid).delete();
 
     return { success: true };
   } catch (error) {
@@ -129,27 +132,28 @@ exports.deleteUser = functions.https.onCall(async (data, context) => {
 });
 
 // Get all users (admin only)
-exports.getUsers = functions.https.onCall(async (data, context) => {
+exports.getUsers = functions.https.onCall(async (request) => {
   console.log("getUsers called");
-  console.log("Context auth:", context.auth); // Log the auth object
+  console.log("Context changed to request")
+  console.log("Context auth:", request.auth); // Log the auth object 
 
   // Check if the request is made by an authenticated user
-  if (!context.auth) {
-    console.warn("Authentication required: context.auth is null"); // Add log here
+  if (!request.auth) {
+    console.warn("Authentication required: request.auth is null"); // Add log here
     throw new functions.https.HttpsError(
       "unauthenticated",
       "Authentication required"
     );
   }
 
-  console.log("User is authenticated. UID:", context.auth.uid); // Log if authenticated
-  console.log("User token claims:", context.auth.token); // Log token claims for debugging
+  console.log("User is authenticated. UID:", request.auth.uid); // Log if authenticated
+  console.log("User token claims:", request.auth.token); // Log token claims for debugging
 
   // Check for admin claim in token first, then fall back to Firestore check
-  if (!context.auth.token.admin) {
+  if (!request.auth.token.admin) {
     console.log("No admin claim in token, checking Firestore...");
     // Verify the caller is an admin
-    const callerUid = context.auth.uid;
+    const callerUid = request.auth.uid;
     const callerDoc = await admin
       .firestore()
       .collection("users")

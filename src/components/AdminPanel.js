@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { functions, auth } from "../firebase";
-import { signOut } from "firebase/auth";
+import { signOut, getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import {
   Container,
   Row,
@@ -131,45 +131,46 @@ function AdminPanel() {
     }
   }, [searchTerm, users]);
 
+
   // Create a new user using the Cloud Function
-  const createUser = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
+ const createUser = async (e) => {
+   e.preventDefault();
+   setLoading(true);
+   setError(null);
+   setSuccess(null);
 
-    try {
-      // Force token refresh before making the call
-      if (auth.currentUser) {
-        await auth.currentUser.getIdToken(true);
-      }
+  try {
+   //   Force token refresh before making the call
+     if (auth.currentUser) {
+       await auth.currentUser.getIdToken(true);
+     }
 
-      console.log("Attempting to call createUser Cloud Function...");
-      const createUserFunction = httpsCallable(functions, "createUser");
-      await createUserFunction({
-        email: newUserEmail,
-        password: newUserPassword,
-        role: newUserRole,
-      });
+     console.log("Attempting to call createUser Cloud Function...");
+     const createUserFunction = httpsCallable(functions, "createUser");
+     await createUserFunction({
+       email: newUserEmail,
+    password: newUserPassword,
+       role: newUserRole,
+     });
 
-      setSuccess("User created successfully!");
-      setNewUserEmail("");
-      setNewUserPassword("");
-      // Refetch users after successful creation
-      fetchUsers();
-    } catch (error) {
-      console.error("Error creating user:", error);
-      if (error.code === "functions/unauthenticated") {
-        setError("Authentication failed to create user. Please log in again.");
-      } else if (error.code === "functions/permission-denied") {
-        setError("Permission denied to create user.");
-      } else {
-        setError("Failed to create user: " + error.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+     setSuccess("User created successfully!");
+     setNewUserEmail("");
+     setNewUserPassword("");
+    //Refetch users after successful creation
+     fetchUsers();
+   } catch (error) {
+     console.error("Error creating user:", error);
+     if (error.code === "functions/unauthenticated") {
+      setError("Authentication failed to create user. Please log in again.");
+     } else if (error.code === "functions/permission-denied") {
+       setError("Permission denied to create user.");
+     } else {
+       setError("Failed to create user: " + error.message);
+     }
+   } finally {
+     setLoading(false);
+   }
+};
 
   // Delete a user using the Cloud Function
   const handleDeleteUser = async (userId) => {
