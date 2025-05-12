@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 
+import girlLanai from "../assets/girl-lanai-transparent.png";
+import ahupaa from "../assets/ahupuaa-transparent.png";
+import moneySun from "../assets/money-sun-transparent.png";
+import haeHawaii from "../assets/hae-hawaii.png";
+
 function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,6 +32,13 @@ function Login({ onLogin }) {
 
   return (
     <div className="login-container">
+      {/* Floating images */}
+      {/* Floating images using img tags */}
+      <img src={girlLanai} className="floating-image floating-image-1" alt="" />
+      <img src={ahupaa} className="floating-image floating-image-2" alt="" />
+      <img src={moneySun} className="floating-image floating-image-3" alt="" />
+      <img src={haeHawaii} className="floating-image floating-image-4" alt="" />
+
       <div className="loginForm">
         <form onSubmit={handleSubmit}>
           <h1>Welcome to Kahua Waiwai</h1>

@@ -1,3 +1,6 @@
+/*-- -------------------------- -->
+<--- Core Styles --->
+<--- -------------------------- --*/
 .App {
   text-align: center;
 }
@@ -12,6 +15,9 @@
   color: #61dafb;
 }
 
+/*-- -------------------------- -->
+<--- Header Styles --->
+<--- -------------------------- --*/
 .title-bar {
   background-color: #03aa22;
   color: white;
@@ -44,8 +50,41 @@
   width: 100%;
   z-index: 900;
   margin-top: 12.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
+/* Logout button styling */
+.logout-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-right: 1rem;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/*-- -------------------------- -->
+<--- Content Styles --->
+<--- -------------------------- --*/
 .content-area {
   padding: 2rem;
   width: 100%;
@@ -86,6 +125,7 @@
   transition: max-height 0.3s ease-out;
   max-height: 0;
 }
+
 .chapter-content.collapsed {
   max-height: 0;
 }
@@ -119,182 +159,9 @@
   background-color: #f8f9fa;
 }
 
-/* Media queries for mobile responsiveness */
-@media (max-width: 768px) {
-  /* Drawer toggle improvements */
-  .drawer-toggle {
-    display: block;
-    top: auto; /* Reset top positioning */
-    bottom: 37.5rem;; /* Position at bottom of navbar */
-    left: 15px;
-    z-index: 1100;
-  }
-  
-  /* Title bar improvements */
-  .title-bar {
-    padding: 0.8rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    height: auto; /* Allow height to adjust based on content */
-    min-height: 80px; /* Ensure minimum height */
-  }
-  
-  .title-text {
-    font-size: 1.8rem;
-    text-align: center;
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-  
-  /* Hide the text in navtracker but keep the search bar */
-  .nav-tracker .text-body {
-    display: none !important; /* This targets the span with className="text-body" */
-  }
-  
-  /* Adjust the navtracker layout for mobile */
-  .nav-tracker {
-    display: flex;
-    justify-content: center !important; /* Override the justify-content-between */
-    padding: 1rem;
-    position: fixed;
-    top: 10.5rem;
-    margin-top: 0;
-    width: 100%;
-    z-index: 899;
-  }
-  
-  /* Make search bar take appropriate width */
-  .nav-tracker .search-container {
-    width: 100%;
-    max-width: 300px;
-    margin: 0;
-  }
-  
-  /* Content area adjustments */
-  .content-area {
-    margin-top: 15rem; /* Adjust based on combined height of navbar and navtracker */
-    padding: 1rem 0.5rem;
-  }
-  
-  .drawer-container {
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 80%;
-    max-width: 300px;
-    transform: translateX(-100%);
-    z-index: 1050;
-    overflow-y: auto;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    margin-top: 0; /* Remove the large margin on mobile */
-    padding-top: 130px; /* Adjust to match content-area margin-top */
-  }
-  
-  .drawer-container.open {
-    transform: translateX(0);
-  }
-  
-  .drawer-backdrop {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1040;
-  }
-  
-  .drawer-backdrop.visible {
-    display: block;
-  }
-}
-
-/* Highlighted search term styling */
-.search-highlight {
-  background-color: #ffff00;
-  padding: 2px 0;
-  border-radius: 2px;
-  font-weight: bold;
-}
-
-/* Footer styles */
-.footer-bar {
-  background-color: #03aa22;
-  color: white;
-  width: 100%;
-  height: 8rem;
-  margin-top: auto;
-  position: relative; 
-  align-items: center;
-  z-index: 900;
-}
-
-
-.footer-content {
-  text-align: center;
-  width: 100%;
-}
-
-.footer-text {
-  color: white;
-  font-family: "Bree Serif", serif;
-  font-weight: 400;
-  font-style: normal;
-  margin-top: 1.2rem;
-  margin-bottom: 0.5rem;
-}
-
-.footer-text:last-child {
-  margin-bottom: 0;
-}
-
-/* Login page */
-
-.login-container {
-  height: 100vh; /* Set exact height to viewport height */
-  width: 100%;
-  background-image: url("assets/cover-login.png");
-  background-size: 105%;
-  background-position: center;
-  background-repeat: no-repeat;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background-color: #95b36d; /* Optional: add a background color in case the image doesn't fill the entire container */
-}
-
-
-.loginForm {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.login-container input {
-  display: block;
-  margin: 1rem 0;
-  padding: 0.5rem;
-  width: 100%;
-}
-
-.login-container button {
-  width: 100%;
-  padding: 0.5rem;
-  background: #03aa22;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-/* Search Bar */
-
+/*-- -------------------------- -->
+<--- Search Bar Styles --->
+<--- -------------------------- --*/
 .search-container {
   width: 300px;
 }
@@ -315,6 +182,176 @@
   background-color: #f8f9fa;
 }
 
+/* Highlighted search term styling */
+.search-highlight {
+  background-color: #ffff00;
+  padding: 2px 0;
+  border-radius: 2px;
+  font-weight: bold;
+}
+
+/*-- -------------------------- -->
+<--- Footer Styles --->
+<--- -------------------------- --*/
+.footer-bar {
+  background-color: #03aa22;
+  color: white;
+  width: 100%;
+  height: 8rem;
+  margin-top: auto;
+  position: relative;
+  align-items: center;
+  z-index: 900;
+}
+
+.footer-content {
+  text-align: center;
+  width: 100%;
+}
+
+.footer-text {
+  color: white;
+  font-family: "Bree Serif", serif;
+  font-weight: 400;
+  font-style: normal;
+  margin-top: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer-text:last-child {
+  margin-bottom: 0;
+}
+
+/*-- -------------------------- -->
+<--- Login Page Styles --->
+<--- -------------------------- --*/
+.login-container {
+  height: 100vh;
+  width: 100%;
+  background-image: url("assets/background.png");
+  background-size: 105%;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #92B774;
+}
+
+.loginForm {
+  position: relative;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  max-width: 35rem;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.login-container input {
+  display: block;
+  margin: 1rem 0;
+  padding: 0.5rem;
+  width: 100%;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 0.5rem;
+  background: #03aa22;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Floating images around login form */
+.login-container .floating-image {
+  position: absolute;
+  z-index: 1;
+  opacity: 0.85;
+  pointer-events: none;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+}
+
+/* Using consistent clamp values for images 1-3 */
+.login-container .floating-image-1,
+.login-container .floating-image-2,
+.login-container .floating-image-3 {
+  width: clamp(12rem, 40vw, 25rem);
+  height: clamp(12rem, 40vw, 25rem);
+}
+
+/* Image 4 has different dimensions */
+.login-container .floating-image-4 {
+  width: clamp(10rem, 30vw, 18rem);
+  height: clamp(10rem, 30vw, 18rem);
+}
+
+/* Individual positioning */
+.login-container .floating-image-1 {
+  top: 10%;
+  left: 5%;
+  animation: float1 17s ease-in-out infinite;
+}
+
+.login-container .floating-image-2 {
+  bottom: 10%;
+  right: 5%;
+  animation: float2 22s ease-in-out infinite;
+}
+
+.login-container .floating-image-3 {
+  top: 10%;
+  right: 5%;
+  animation: float3 19s ease-in-out infinite;
+}
+
+.login-container .floating-image-4 {
+  bottom: 10%;
+  left: 5%;
+  animation: float4 24s ease-in-out infinite;
+}
+
+/* Enhanced floating animations with wider movement range */
+@keyframes float1 {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-30px, 30px) rotate(8deg); }
+  50% { transform: translate(20px, -20px) rotate(-5deg); }
+  75% { transform: translate(-10px, -30px) rotate(3deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@keyframes float2 {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(40px, -20px) rotate(-8deg); }
+  66% { transform: translate(-30px, 30px) rotate(5deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@keyframes float3 {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  30% { transform: translate(-40px, -30px) rotate(-5deg); }
+  60% { transform: translate(30px, 20px) rotate(8deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@keyframes float4 {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  40% { transform: translate(30px, 30px) rotate(5deg); }
+  80% { transform: translate(-20px, -20px) rotate(-8deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/*-- -------------------------- -->
+<--- Media Styles --->
+<--- -------------------------- --*/
 .video-container {
   position: relative;
   padding-bottom: 56.25%; /* 16:9 aspect ratio */
@@ -342,35 +379,9 @@
   border-radius: 4px;
 }
 
-/* Logout button styling */
-.logout-btn {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 4px;
-  padding: 0.5rem 1rem;
-  margin-right: 1rem;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-.logout-btn:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.6);
-  transform: translateY(-2px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.logout-btn:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
-/* Loading messages */
-
+/*-- -------------------------- -->
+<--- Loading Styles --->
+<--- -------------------------- --*/
 .loading-container {
   position: fixed;
   top: 0;
@@ -387,4 +398,162 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/*-- -------------------------- -->
+<--- Media Queries --->
+<--- -------------------------- --*/
+/* Media queries for mobile responsiveness */
+@media (max-width: 768px) {
+  /* Header adjustments for mobile */
+  .title-bar {
+    padding: 0.8rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    height: auto;
+    min-height: 80px;
+  }
+  
+  .title-text {
+    font-size: 1.8rem;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Hide the text in navtracker but keep the search bar */
+  .nav-tracker .text-body {
+    display: none !important;
+  }
+  
+  /* Adjust the navtracker layout for mobile */
+  .nav-tracker {
+    display: flex;
+    justify-content: center !important;
+    padding: 1rem;
+    position: fixed;
+    top: 10.5rem;
+    margin-top: 0;
+    width: 100%;
+    z-index: 899;
+  }
+  
+  /* Make search bar take appropriate width */
+  .nav-tracker .search-container {
+    width: 100%;
+    max-width: 300px;
+    margin: 0;
+  }
+  
+  /* Drawer toggle improvements */
+  .drawer-toggle {
+    display: block;
+    top: auto;
+    bottom: 37.5rem;
+    left: 15px;
+    z-index: 1100;
+  }
+  
+  /* Content area adjustments */
+  .content-area {
+    margin-top: 15rem;
+    padding: 1rem 0.5rem;
+  }
+  
+  .drawer-container {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 80%;
+    max-width: 300px;
+    transform: translateX(-100%);
+    z-index: 1050;
+    overflow-y: auto;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    margin-top: 0;
+    padding-top: 130px;
+  }
+  
+  .drawer-container.open {
+    transform: translateX(0);
+  }
+  
+  .drawer-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+  }
+  
+  .drawer-backdrop.visible {
+    display: block;
+  }
+  
+  /* Login page adjustments for mobile */
+  .login-container {
+    background-size: cover;
+  }
+  
+  .loginForm {
+    width: 90%;
+    max-width: 350px;
+    padding: 1.5rem;
+  }
+  
+  .loginForm h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .login-container input {
+    margin: 0.7rem 0;
+    padding: 0.5rem;
+  }
+  
+    /* Floating images adjustments for medium screens */
+  .login-container .floating-image-1 {
+    top: 5%;
+    left: 2%;
+  }
+  
+  .login-container .floating-image-2 {
+    bottom: 5%;
+    right: 2%;
+  }
+  
+  .login-container .floating-image-3 {
+    top: 5%;
+    right: 2%;
+  }
+  
+  .login-container .floating-image-4 {
+    bottom: 5%;
+    left: 2%;
+  }
+}
 
+/* Further adjustments for very small screens */
+@media (max-width: 30rem) { /* 480px */
+  .login-container .floating-image-1 {
+    top: 2%;
+    left: 2%;
+  }
+  
+  .login-container .floating-image-2 {
+    bottom: 2%;
+    right: 2%;
+  }
+  
+  .login-container .floating-image-3 {
+    top: 2%;
+    right: 2%;
+  }
+  
+  .login-container .floating-image-4 {
+    bottom: 2%;
+    left: 2%;
+  }
+}
