@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 const TableOfContents = ({ chapters }) => {
   const [expandedChapters, setExpandedChapters] = useState({});
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [hasBeenClicked, setHasBeenClicked] = useState(false);
 
   const toggleChapter = (chapterId) => {
     setExpandedChapters((prev) => ({
@@ -14,13 +15,20 @@ const TableOfContents = ({ chapters }) => {
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
+    setHasBeenClicked(true);
   };
 
   return (
     <>
-      {/* Drawer toggle button for mobile */}
-      <button className="drawer-toggle" onClick={toggleDrawer}>
-        ☰ Menu
+      {/* Thin sidebar toggle button */}
+      <button
+        className={`drawer-toggle ${drawerOpen ? "open" : ""} ${
+          hasBeenClicked ? "clicked" : ""
+        }`}
+        onClick={toggleDrawer}
+        aria-label="Toggle table of contents"
+      >
+        <i className="bi bi-chevron-right"></i>
       </button>
 
       {/* Backdrop for mobile drawer */}
@@ -38,6 +46,7 @@ const TableOfContents = ({ chapters }) => {
             Table of Contents
           </h3>
         </div>
+
         {chapters.map((chapter) => (
           <div key={chapter.id} className="mb-3">
             <div

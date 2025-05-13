@@ -28,7 +28,7 @@
   display: flex;
   align-items: center;
   padding: 1rem;
-  height: 13rem; /* Fixed height for consistency */
+  height: 13rem; 
 }
 
 
@@ -37,7 +37,6 @@
   font-family: "Bree Serif", serif;
   font-weight: 400;
   font-style: normal;
-  /* Use clamp for responsive font size */
   font-size: clamp(1.4rem, 4vw, 3rem);
   width: auto;
   margin-bottom: clamp(0, 1vw, 0.5rem);
@@ -72,7 +71,6 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  /* Use clamp for responsive sizing */
   padding: clamp(0.25rem, 1vw, 0.5rem) clamp(0.5rem, 2vw, 1rem);
   font-size: clamp(0.75rem, 3vw, 0.9rem);
 }
@@ -146,15 +144,14 @@
   background-color: #f8f9fa;
 }
 
-/* Add this to your CSS */
 .admin-content {
-  margin-top: 16rem !important; /* Increased top margin for admin panel */
+  margin-top: 16rem !important;
 }
 
 /* For desktop */
 @media (min-width: 895px) {
   .admin-content {
-    margin-top: 18rem !important; /* Even more margin on larger screens */
+    margin-top: 18rem !important;
   }
 }
 
@@ -167,36 +164,61 @@
   background-color: #fff;
   border-right: 1px solid #e0e0e0;
   padding-top: 9.5rem; /* Same as content-area margin-top */
+   transition: transform 0.3s ease;
 }
 
 /* Mobile drawer toggle button */
 .drawer-toggle {
   display: none;
   position: fixed;
-  left: 10px;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 1001;
   background-color: #03aa22;
   color: white;
   border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  padding: 20px 5px;
   cursor: pointer;
-  /* Position below nav tracker */
-  top: 10rem; /* Adjusted to be below nav tracker */
+  width: 25px;
+  height: 60px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
-/* Ensure table of contents heading displays correctly */
+.drawer-toggle i {
+  transition: transform 0.3s ease;
+}
+
+.drawer-toggle.open i {
+  transform: rotate(180deg);
+}
+
+/* subtle animation to draw attention when first loaded */
+@keyframes subtle-pulse {
+  0% { box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); }
+  50% { box-shadow: 2px 0 8px rgba(3, 170, 34, 0.3); }
+  100% { box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); }
+}
+
+.drawer-toggle:not(.clicked) {
+  animation: subtle-pulse 2s infinite;
+}
+
+
 .table-of-contents-heading {
-  white-space: nowrap; /* Prevent wrapping */
-  overflow: visible; /* Ensure text isn't cut off */
-  width: auto; /* Allow the heading to take its natural width */
+  white-space: nowrap; 
+  overflow: visible; 
+  width: auto;
 }
 
 @media (max-width: 768px) {
   .table-of-contents-heading {
-    font-size: 1.5rem; /* Slightly smaller on mobile */
-    text-align: center; /* Center on mobile */
-    margin-top: 7rem !important; /* Move down in the drawer */
+    font-size: 1.5rem; 
+    text-align: center; 
+    margin-top: 7rem !important; 
   }
 }
 
@@ -346,14 +368,14 @@
   animation: gentle-float 8s ease-in-out infinite;
 }
 
-/* Move image 2 lower */
+
 .login-container .floating-image-2 {
   bottom: 2%;  /* Move further down */
   right: 5%;
   animation: gentle-float 9s ease-in-out infinite reverse;
 }
 
-/* Move image 3 higher */
+
 .login-container .floating-image-3 {
   top: 2%;  /* Move further up */
   right: 5%;
@@ -369,12 +391,12 @@
 /* For larger screens, increase vertical separation */
 @media (min-width: 1200px) {
   .login-container .floating-image-2 {
-    bottom: 0;  /* Align with bottom edge */
+    bottom: 0;  
     right: 5%;
   }
   
   .login-container .floating-image-3 {
-    top: 0;  /* Align with top edge */
+    top: 0;  
     right: 5%;
   }
 }
@@ -405,7 +427,7 @@
 }
 
 
-/* Simple gentle floating animation that stays close to original position */
+/* Gentle floating animation that stays close to original position */
 @keyframes gentle-float {
   0% { transform: translate(0, 0) rotate(0deg); }
   25% { transform: translate(20px, 15px) rotate(2deg); }
@@ -414,17 +436,17 @@
   100% { transform: translate(0, 0) rotate(0deg); }
 }
 
-/* For smaller screens, adjust animation range but keep images larger */
+/* For smaller screens, adjust animation range */
 @media (max-width: 768px) {
   .login-container .floating-image-1,
   .login-container .floating-image-2,
   .login-container .floating-image-3 {
-    width: clamp(12rem, 45vw, 25rem);  /* Increased from 10rem/35vw/20rem */
+    width: clamp(12rem, 45vw, 25rem);  
     height: clamp(12rem, 45vw, 25rem);
   }
   
   .login-container .floating-image-4 {
-    width: clamp(10rem, 35vw, 18rem);  /* Increased from 8rem/25vw/15rem */
+    width: clamp(10rem, 35vw, 18rem);  
     height: clamp(10rem, 35vw, 18rem);
   }
   
@@ -437,17 +459,17 @@
   }
 }
 
-/* For very small screens, reduce sizes slightly but still keep them substantial */
+/* For very small screens, reduce sizes slightly */
 @media (max-width: 480px) {
   .login-container .floating-image-1,
   .login-container .floating-image-2,
   .login-container .floating-image-3 {
-    width: clamp(10rem, 40vw, 20rem);  /* Increased from 8rem/30vw/15rem */
+    width: clamp(10rem, 40vw, 20rem); 
     height: clamp(10rem, 40vw, 20rem);
   }
   
   .login-container .floating-image-4 {
-    width: clamp(8rem, 30vw, 16rem);  /* Increased from 6rem/20vw/12rem */
+    width: clamp(8rem, 30vw, 16rem); 
     height: clamp(8rem, 30vw, 16rem);
   }
   
@@ -505,10 +527,11 @@
 
 /* Fix for problematic range (680-767px) */
 @media (min-width: 680px) and (max-width: 767px) {
-  /* Ensure proper positioning of elements */
   .drawer-toggle {
-    top: clamp(7rem, calc(10vh + 1.5rem), 9rem);
+    top: 50%;
+    transform: translateY(-50%);
   }
+  
   /* Prevent any white space gaps */
   .title-bar::after {
     content: '';
@@ -520,6 +543,7 @@
     background-color: #03aa22;
     z-index: 950;
   }
+  
   .nav-tracker::before {
     content: '';
     position: absolute;
@@ -530,13 +554,16 @@
     background-color: #bbc3bf;
     z-index: 949;
   }
+  
   /* Add specific nav-tracker position for this range */
   .nav-tracker {
     top: 13rem; /* Match title bar height */
   }
+  
   .content-area {
     margin-top: 16.5rem; /* title bar (13rem) + nav tracker (3.5rem) */
   }
+  
   .drawer-container {
     padding-top: 16.5rem; /* Match content area */
   }
@@ -549,12 +576,13 @@
     flex-wrap: wrap;
     justify-content: center;
   }
+  
   .title-text {
     text-align: center;
     width: 100%;
   }
 
-   /* Hide the text in navtracker but keep the search bar, except on admin panel */
+  /* Hide the text in navtracker but keep the search bar, except on admin panel */
   .nav-tracker .text-body {
     display: none !important;
   }
@@ -572,26 +600,38 @@
     top: 13rem; /* Position below mobile title bar */
     padding: 2rem;
   }
+  
   /* Make search bar take appropriate width */
   .nav-tracker .search-container {
     width: clamp(200px, 90%, 300px);
     margin: 0;
   }
-  /* Drawer toggle improvements */
+  
+  /* Drawer toggle - thin sidebar/arrow design */
   .drawer-toggle {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: fixed;
-    top: 10rem; /* Updated position */
+    top: 50%;
+    transform: translateY(-50%);
     bottom: auto;
-    left: 15px;
+    left: 0;
+    width: 25px;
+    height: 60px;
+    padding: 20px 5px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
     z-index: 1100;
   }
+  
   /* Content area adjustments */
   .content-area {
     padding: 1rem 0.5rem 1rem clamp(2.5rem, 5vw, 3rem);
-    margin-top: 14rem; /* Updated margin */
+    margin-top: 14rem; 
     margin-bottom: 4rem;
   }
+  
   /* Drawer container adjustments */
   .drawer-container {
     position: fixed;
@@ -604,11 +644,14 @@
     z-index: 1050;
     overflow-y: auto;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    padding-top: 8rem; /* Updated padding */
+    padding-top: 0rem; 
+    transition: transform 0.3s ease;
   }
+  
   .drawer-container.open {
     transform: translateX(0);
   }
+  
   .drawer-backdrop {
     display: none;
     position: fixed;
@@ -619,39 +662,48 @@
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 1040;
   }
+  
   .drawer-backdrop.visible {
     display: block;
   }
+  
   /* Login page adjustments for mobile */
   .login-container {
     background-size: cover;
   }
+  
   .loginForm {
     width: 90%;
     max-width: 350px;
     padding: 1.5rem;
   }
+  
   .loginForm h1 {
     font-size: 1.5rem;
     margin-bottom: 1rem;
   }
+  
   .login-container input {
     margin: 0.7rem 0;
     padding: 0.5rem;
   }
+  
   /* Floating images adjustments for medium screens */
   .login-container .floating-image-1 {
     top: 5%;
     left: 2%;
   }
+  
   .login-container .floating-image-2 {
     bottom: 5%;
     right: 2%;
   }
+  
   .login-container .floating-image-3 {
     top: 5%;
     right: 2%;
   }
+  
   .login-container .floating-image-4 {
     bottom: 5%;
     left: 2%;
@@ -665,38 +717,52 @@
     padding: clamp(0.25rem, 1vw, 0.5rem) clamp(0.5rem, 2vw, 1rem);
     font-size: clamp(0.75rem, 3vw, 0.9rem);
   }
+  
+  /* Drawer toggle remains centered vertically */
+  .drawer-toggle {
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px; /* Slightly smaller on very small screens */
+    height: 55px;
+  }
+  
   /* Adjust floating images for small screens */
   .login-container .floating-image-1 {
     top: 2%;
     left: 2%;
   }
+  
   .login-container .floating-image-2 {
     bottom: 2%;
     right: 2%;
   }
+  
   .login-container .floating-image-3 {
     top: 2%;
     right: 2%;
   }
+  
   .login-container .floating-image-4 {
     bottom: 2%;
     left: 2%;
   }
+  
   /* Additional adjustments for very small screens */
   .nav-tracker {
     top: 13rem; /* Slightly higher on very small screens */
   }
+  
   .content-area {
     margin-top: 15rem;
   }
+  
   .drawer-container {
     padding-top: 7.5rem;
   }
 }
 
-/* Add this to your existing media queries section */
+
 @media (max-width: 768px) {
-  /* Existing mobile styles... */
   
   /* Admin panel specific adjustments */
   .admin-panel {

@@ -41,6 +41,31 @@ function SearchBar() {
           title: chapter3.title,
           pages: chapter3.pages,
         },
+        {
+          id: "Lesson 4: Building Credit",
+          title: chapter4.title,
+          pages: chapter4.pages,
+        },
+        {
+          id: "Lesson 5: Credit Cards & Cars",
+          title: chapter5.title,
+          pages: chapter5.pages,
+        },
+        {
+          id: "Lesson 6: Surviving a Financial Emergency",
+          title: chapter6.title,
+          pages: chapter6.pages,
+        },
+        {
+          id: "Lesson 7: Building a Career, Improving Your Community",
+          title: chapter7.title,
+          pages: chapter7.pages,
+        },
+        {
+          id: "Lesson 8: Planning for Our Future",
+          title: chapter8.title,
+          pages: chapter8.pages,
+        },
       ];
 
       console.log("Chapters loaded for search:", chaptersData);

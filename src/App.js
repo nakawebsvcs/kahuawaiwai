@@ -214,26 +214,26 @@ function AppContent() {
           setIsAdmin(false);
         }
 
-        // CHANGED: Load chapters from JSON instead of fetching from Firestore
+        // Load chapters from JSON
         loadChaptersFromJson();
       } else {
         setIsAuthenticated(false);
         setIsAdmin(false);
         setUser(null);
-        setLoading(false); // Make sure to set loading to false when not authenticated
+        setLoading(false); // set loading to false when not authenticated
       }
       setAuthLoading(false);
     });
 
     return () => unsubscribe();
-  }, [navigate]); // Add navigate to dependencies
+  }, [navigate]);
 
-  // CHANGED: New function to load chapters from JSON files
+  // Load chapters from JSON files
   const loadChaptersFromJson = () => {
     try {
       console.log("Loading chapters from JSON files");
 
-      // Format the JSON data to match the structure expected by the app
+      // Format JSON data to match the structure expected by the app
       const chaptersWithPages = [
         {
           id: "Introduction: Managing Resources Yesterday, Today, & Tomorrow",
@@ -290,8 +290,6 @@ function AppContent() {
       setLoading(false);
     }
   };
-
-  // REMOVED: fetchChapters function that used Firestore
 
   const handleLogin = () => {
     // The onAuthStateChanged listener will handle setting isAuthenticated to true

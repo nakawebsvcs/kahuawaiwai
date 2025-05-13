@@ -15,7 +15,7 @@ function Login({ onLogin }) {
   const [password, setPassword] = useState("");
   const [resetSent, setResetSent] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null); // Added missing success state
+  const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleForgotPassword = async (e) => {
@@ -118,7 +118,6 @@ function Login({ onLogin }) {
   return (
     <div className="login-container">
       {/* Floating images */}
-      {/* Floating images using img tags */}
       <img src={girlLanai} className="floating-image floating-image-1" alt="" />
       <img src={ahupaa} className="floating-image floating-image-2" alt="" />
       <img src={moneySun} className="floating-image floating-image-3" alt="" />
@@ -170,14 +169,14 @@ function Login({ onLogin }) {
               }}
               className="forgot-password-link"
               style={{
-                color: "#666", // Gray text
+                color: "#666",
                 textDecoration: "underline",
                 background: "transparent",
                 border: "none",
                 padding: 0,
                 display: "inline-block",
                 cursor: "pointer",
-                fontSize: "1rem", // Slightly larger font
+                fontSize: "1rem",
                 marginTop: "5px",
                 textAlign: "center",
               }}
