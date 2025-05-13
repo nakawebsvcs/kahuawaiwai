@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { functions, auth } from "../firebase";
-import { signOut, getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { signOut, getAuth, sendPasswordResetEmail } from "firebase/auth";
 import {
   Container,
   Row,
@@ -18,7 +18,6 @@ function AdminPanel() {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [newUserEmail, setNewUserEmail] = useState("");
-  const [newUserPassword, setNewUserPassword] = useState("");
   const [newUserRole, setNewUserRole] = useState("user");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -132,45 +131,49 @@ function AdminPanel() {
   }, [searchTerm, users]);
 
 
-  // Create a new user using the Cloud Function
- const createUser = async (e) => {
+  // Invite a new user using the Cloud Function
+ const inviteUser = async (e) => {
    e.preventDefault();
    setLoading(true);
    setError(null);
    setSuccess(null);
 
-  try {
-   //   Force token refresh before making the call
+   try {
+     // Force token refresh before making the call
      if (auth.currentUser) {
        await auth.currentUser.getIdToken(true);
      }
 
-     console.log("Attempting to call createUser Cloud Function...");
-     const createUserFunction = httpsCallable(functions, "createUser");
-     await createUserFunction({
+     console.log("Attempting to call inviteUser Cloud Function...");
+     const inviteUserFunction = httpsCallable(functions, "inviteUser");
+     const result = await inviteUserFunction({
        email: newUserEmail,
-    password: newUserPassword,
        role: newUserRole,
      });
 
-     setSuccess("User created successfully!");
-     setNewUserEmail("");
-     setNewUserPassword("");
-    //Refetch users after successful creation
-     fetchUsers();
+     // Send password reset email to the newly created user
+     if (result.data.success) {
+       await sendPasswordResetEmail(auth, result.data.email);
+       setSuccess(
+         "User invited successfully! A password reset email has been sent."
+       );
+       setNewUserEmail("");
+       // Refetch users after successful creation
+       fetchUsers();
+     }
    } catch (error) {
-     console.error("Error creating user:", error);
+     console.error("Error inviting user:", error);
      if (error.code === "functions/unauthenticated") {
-      setError("Authentication failed to create user. Please log in again.");
+       setError("Authentication failed to invite user. Please log in again.");
      } else if (error.code === "functions/permission-denied") {
-       setError("Permission denied to create user.");
+       setError("Permission denied to invite user.");
      } else {
-       setError("Failed to create user: " + error.message);
+       setError("Failed to invite user: " + error.message);
      }
    } finally {
      setLoading(false);
    }
-};
+ };
 
   // Delete a user using the Cloud Function
   const handleDeleteUser = async (userId) => {
@@ -258,9 +261,9 @@ function AdminPanel() {
           <Row>
             <Col md={4} lg={3}>
               <Card className="mb-4">
-                <Card.Header as="h5">Create New User</Card.Header>
+                <Card.Header as="h5">Invite New User</Card.Header>
                 <Card.Body>
-                  <Form onSubmit={createUser}>
+                  <Form onSubmit={inviteUser}>
                     <Form.Group className="mb-3">
                       <Form.Label>Email:</Form.Label>
                       <Form.Control
@@ -268,16 +271,6 @@ function AdminPanel() {
                         value={newUserEmail}
                         onChange={(e) => setNewUserEmail(e.target.value)}
                         required
-                      />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Password:</Form.Label>
-                      <Form.Control
-                        type="password"
-                        value={newUserPassword}
-                        onChange={(e) => setNewUserPassword(e.target.value)}
-                        required
-                        minLength="6"
                       />
                     </Form.Group>
                     <Form.Group className="mb-3">
@@ -296,7 +289,7 @@ function AdminPanel() {
                       className="w-100"
                       disabled={loading}
                     >
-                      {loading ? "Creating..." : "Create User"}
+                      {loading ? "Inviting..." : "Invite User"}
                     </Button>
                   </Form>
                 </Card.Body>
