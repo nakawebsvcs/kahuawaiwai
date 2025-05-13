@@ -115,14 +115,14 @@ function MainContent({ chapters, isAdmin, handleLogout }) {
           element={
             isAdmin ? (
               <>
-                <div className="nav-tracker d-flex justify-content-between align-items-center">
+                <div className="nav-tracker d-flex justify-content-between align-items-center admin-nav-tracker">
                   <span className="text-body">Admin Panel</span>
                   {/* Remove SearchBar component */}
                 </div>
                 <div className="d-flex flex-grow-1">
                   {/* Remove TableOfContents component */}
                   <main
-                    className="content-area"
+                    className="content-area admin-content"
                     style={{ marginLeft: 0, width: "100%" }}
                   >
                     <Container>
