@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useChapters } from "./ChapterContext";
 
-const TableOfContents = ({ chapters }) => {
+const TableOfContents = () => {
   const [expandedChapters, setExpandedChapters] = useState({});
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [hasBeenClicked, setHasBeenClicked] = useState(false);
+   const { chapters } = useChapters();
 
   const toggleChapter = (chapterId) => {
     setExpandedChapters((prev) => ({
@@ -13,7 +15,13 @@ const TableOfContents = ({ chapters }) => {
     }));
   };
 
-  const toggleDrawer = () => {
+  const toggleDrawer = (e) => {
+    // Only prevent default for non-touch events
+    // Touch events are handled as passive by default in modern browsers
+    if (e && e.type !== "touchend" && e.type !== "touchstart") {
+      e.preventDefault();
+    }
+
     setDrawerOpen(!drawerOpen);
     setHasBeenClicked(true);
   };
@@ -26,6 +34,7 @@ const TableOfContents = ({ chapters }) => {
           hasBeenClicked ? "clicked" : ""
         }`}
         onClick={toggleDrawer}
+        // Remove onTouchEnd or make it non-passive
         aria-label="Toggle table of contents"
       >
         <i className="bi bi-chevron-right"></i>

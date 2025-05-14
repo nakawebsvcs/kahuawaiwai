@@ -148,6 +148,18 @@
   margin-top: 16rem !important;
 }
 
+.navigation-links .nav-link {
+  color: #525960;
+  font-weight: 500;
+  transition: color 0.2s;
+  margin: 2rem;
+}
+
+.navigation-links .nav-link:hover {
+  color: #525960;
+}
+
+
 /* For desktop */
 @media (min-width: 895px) {
   .admin-content {
@@ -174,7 +186,7 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 1001;
+  z-index: 1100; /* Increased z-index to ensure it's above other elements */
   background-color: #03aa22;
   color: white;
   border: none;
@@ -182,10 +194,12 @@
   border-bottom-right-radius: 4px;
   padding: 20px 5px;
   cursor: pointer;
-  width: 25px;
-  height: 60px;
+  width: 30px; /* Slightly wider for better touch target */
+  height: 70px; /* Taller for better touch target */
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+  touch-action: manipulation; /* Optimize for touch */
 }
 
 .drawer-toggle i {
@@ -218,7 +232,7 @@
   .table-of-contents-heading {
     font-size: 1.5rem; 
     text-align: center; 
-    margin-top: 7rem !important; 
+    margin-top: -2rem !important; 
   }
 }
 

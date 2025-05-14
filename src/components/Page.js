@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useChapters } from "./ChapterContext";
 
 function Page({ chapter, page }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { getNextChapter, getPreviousChapter } = useChapters();
   const [highlightedContent, setHighlightedContent] = useState(page.content);
 
   // Extract search term from URL query parameters
@@ -34,6 +37,49 @@ function Page({ chapter, page }) {
       setHighlightedContent("");
     }
   }, [location.search, page.content]);
+
+  // Function to navigate to the next page
+  const goToNextPage = () => {
+    if (!chapter || !page) return;
+
+    const currentPageIndex = chapter.pages.findIndex((p) => p.id === page.id);
+
+    if (currentPageIndex < chapter.pages.length - 1) {
+      // Go to next page in current chapter
+      const nextPage = chapter.pages[currentPageIndex + 1];
+      navigate(`/chapter/${chapter.id}/${nextPage.id}`);
+    } else {
+      // Go to first page of next chapter
+      const nextChapter = getNextChapter(chapter.id);
+      if (nextChapter && nextChapter.pages && nextChapter.pages.length > 0) {
+        navigate(`/chapter/${nextChapter.id}/${nextChapter.pages[0].id}`);
+      } else {
+        console.log("At the last page of the last chapter");
+      }
+    }
+  };
+
+  // Function to navigate to the previous page
+  const goToPreviousPage = () => {
+    if (!chapter || !page) return;
+
+    const currentPageIndex = chapter.pages.findIndex((p) => p.id === page.id);
+
+    if (currentPageIndex > 0) {
+      // Go to previous page in current chapter
+      const prevPage = chapter.pages[currentPageIndex - 1];
+      navigate(`/chapter/${chapter.id}/${prevPage.id}`);
+    } else {
+      // Go to last page of previous chapter
+      const prevChapter = getPreviousChapter(chapter.id);
+      if (prevChapter && prevChapter.pages && prevChapter.pages.length > 0) {
+        const lastPage = prevChapter.pages[prevChapter.pages.length - 1];
+        navigate(`/chapter/${prevChapter.id}/${lastPage.id}`);
+      } else {
+        console.log("At the first page of the first chapter");
+      }
+    }
+  };
 
   // Function to resolve the media URL
   const getMediaUrl = (mediaPath) => {
@@ -130,6 +176,31 @@ function Page({ chapter, page }) {
         className="mt-3"
         dangerouslySetInnerHTML={{ __html: highlightedContent }}
       />
+      {/* Navigation links */}
+      <div className="navigation-links mt-4 d-flex justify-content-between">
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            goToPreviousPage();
+          }}
+          className="nav-link text-decoration-none"
+        >
+          <i className="bi bi-arrow-left me-2"></i>
+          Previous
+        </a>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            goToNextPage();
+          }}
+          className="nav-link text-decoration-none"
+        >
+          Next
+          <i className="bi bi-arrow-right ms-2"></i>
+        </a>
+      </div>
     </div>
   );
 }

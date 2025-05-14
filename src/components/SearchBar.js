@@ -6,6 +6,11 @@ import chapter0 from "../data/chapters/chapter0.json";
 import chapter1 from "../data/chapters/chapter1.json";
 import chapter2 from "../data/chapters/chapter2.json";
 import chapter3 from "../data/chapters/chapter3.json";
+import chapter4 from "../data/chapters/chapter4.json";
+import chapter5 from "../data/chapters/chapter5.json";
+import chapter6 from "../data/chapters/chapter6.json";
+import chapter7 from "../data/chapters/chapter7.json";
+import chapter8 from "../data/chapters/chapter8.json";
 
 function SearchBar() {
   const [searchTerm, setSearchTerm] = useState("");

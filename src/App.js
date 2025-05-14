@@ -23,18 +23,11 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import AdminPanel from "./components/AdminPanel";
 
 // Import chapter data
-import chapter0 from "./data/chapters/chapter0.json";
-import chapter1 from "./data/chapters/chapter1.json";
-import chapter2 from "./data/chapters/chapter2.json";
-import chapter3 from "./data/chapters/chapter3.json";
-import chapter4 from "./data/chapters/chapter4.json";
-import chapter5 from "./data/chapters/chapter5.json";
-import chapter6 from "./data/chapters/chapter6.json";
-import chapter7 from "./data/chapters/chapter7.json";
-import chapter8 from "./data/chapters/chapter8.json";
+import { ChapterProvider, useChapters } from "./components/ChapterContext";
 
 // Separate the NavigationTracker into its own component
-function NavigationTracker({ chapters }) {
+function NavigationTracker() {
+  const {chapters} = useChapters();
   // Use useParams to get route parameters directly
   const params = useParams();
   const location = useLocation();
@@ -62,7 +55,8 @@ function NavigationTracker({ chapters }) {
 }
 
 // Wrapper component for the main content
-function MainContent({ chapters, isAdmin, handleLogout }) {
+function MainContent({ isAdmin, handleLogout }) {
+  const {chapters} = useChapters();
   return (
     <div className="d-flex flex-column min-vh-100">
       <Navbar fixed="top" className="title-bar">
@@ -86,7 +80,7 @@ function MainContent({ chapters, isAdmin, handleLogout }) {
                 <SearchBar />
               </div>
               <div className="d-flex flex-grow-1">
-                <TableOfContents chapters={chapters} />
+                <TableOfContents />
                 <main className="content-area">
                   <Container>
                     <div className="welcome-page">
@@ -145,12 +139,12 @@ function MainContent({ chapters, isAdmin, handleLogout }) {
           path="/chapter/:chapterId/:pageId"
           element={
             <>
-              <NavigationTracker chapters={chapters} />
+              <NavigationTracker />
               <div className="d-flex flex-grow-1">
                 <TableOfContents chapters={chapters} />
                 <main className="content-area">
                   <Container>
-                    <PageContent chapters={chapters} />
+                    <PageContent />
                   </Container>
                 </main>
               </div>
@@ -164,7 +158,8 @@ function MainContent({ chapters, isAdmin, handleLogout }) {
 }
 
 // Component to render the page content based on URL parameters
-function PageContent({ chapters }) {
+function PageContent() {
+  const {chapters} = useChapters();
   const { chapterId, pageId } = useParams();
   const parsedPageId = parseInt(pageId);
   const currentChapter = chapters.find((chapter) => chapter.id === chapterId);
@@ -179,15 +174,14 @@ function PageContent({ chapters }) {
   return <Page chapter={currentChapter} page={currentPage} />;
 }
 
-// Create an AppContent component that can use hooks
+
 function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [user, setUser] = useState(null);
-  const [chapters, setChapters] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [authLoading, setAuthLoading] = useState(true);
-  const navigate = useNavigate(); // Use the useNavigate hook
+  const navigate = useNavigate(); 
+  const { loading: chaptersLoading } = useChapters();
 
   useEffect(() => {
     // Normal authentication flow
@@ -214,82 +208,16 @@ function AppContent() {
           setIsAdmin(false);
         }
 
-        // Load chapters from JSON
-        loadChaptersFromJson();
       } else {
         setIsAuthenticated(false);
         setIsAdmin(false);
         setUser(null);
-        setLoading(false); // set loading to false when not authenticated
       }
       setAuthLoading(false);
     });
 
     return () => unsubscribe();
   }, [navigate]);
-
-  // Load chapters from JSON files
-  const loadChaptersFromJson = () => {
-    try {
-      console.log("Loading chapters from JSON files");
-
-      // Format JSON data to match the structure expected by the app
-      const chaptersWithPages = [
-        {
-          id: "Introduction: Managing Resources Yesterday, Today, & Tomorrow",
-          title: chapter0.title,
-          pages: chapter0.pages,
-        },
-        {
-          id: "Lesson 1: Show Me the Money",
-          title: chapter1.title,
-          pages: chapter1.pages,
-        },
-        {
-          id: "Lesson 2: Savin' Up",
-          title: chapter2.title,
-          pages: chapter2.pages,
-        },
-        {
-          id: "Lesson 3: Dat's My Bank",
-          title: chapter3.title,
-          pages: chapter3.pages,
-        },
-        {
-          id: "Lesson 4: Building Credit",
-          title: chapter4.title,
-          pages: chapter4.pages,
-        },
-        {
-          id: "Lesson 5: Credit Cards & Cars",
-          title: chapter5.title,
-          pages: chapter5.pages,
-        },
-        {
-          id: "Lesson 6: Surviving a Financial Emergency",
-          title: chapter6.title,
-          pages: chapter6.pages,
-        },
-        {
-          id: "Lesson 7: Building a Career, Improving Your Community",
-          title: chapter7.title,
-          pages: chapter7.pages,
-        },
-        {
-          id: "Lesson 8: Planning for Our Future",
-          title: chapter8.title,
-          pages: chapter8.pages,
-        },
-      ];
-
-      console.log("Chapters loaded from JSON files:", chaptersWithPages);
-      setChapters(chaptersWithPages);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error loading chapters from JSON:", error);
-      setLoading(false);
-    }
-  };
 
   const handleLogin = () => {
     // The onAuthStateChanged listener will handle setting isAuthenticated to true
@@ -326,7 +254,7 @@ function AppContent() {
     return <Login onLogin={handleLogin} />;
   }
 
-  if (loading) {
+  if (chaptersLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
         <div className="text-center p-4 bg-white rounded shadow-sm">
@@ -345,7 +273,6 @@ function AppContent() {
 
   return (
     <MainContent
-      chapters={chapters}
       isAdmin={isAdmin}
       handleLogout={handleLogout}
     />
@@ -356,7 +283,9 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <ChapterProvider>
+        <AppContent />
+      </ChapterProvider>
     </Router>
   );
 }
