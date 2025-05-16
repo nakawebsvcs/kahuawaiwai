@@ -38,6 +38,11 @@ function Page({ chapter, page }) {
     }
   }, [location.search, page.content]);
 
+  // Scroll to top when page changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [page.id]);
+
   // Function to navigate to the next page
   const goToNextPage = () => {
     if (!chapter || !page) return;
