@@ -14,8 +14,17 @@ function Page({ chapter, page }) {
     const highlightTerm = queryParams.get("highlight");
 
     if (page.content) {
-      // First replace newlines with <br> tags
-      let processedContent = page.content.replace(/\n/g, "<br>");
+      // Log the raw content to see what we're working with
+      console.log("Raw content:", JSON.stringify(page.content));
+
+      // Process the content with paragraph tags for better spacing
+      let processedContent = page.content
+        // First, split by double newlines and wrap in paragraph tags
+        .split(/\n\n+/)
+        .map((para) => `<p>${para}</p>`)
+        .join("")
+        // Then handle any remaining single newlines within paragraphs
+        .replace(/\n/g, "<br>");
 
       // Then highlight the search term if it exists
       if (highlightTerm) {
