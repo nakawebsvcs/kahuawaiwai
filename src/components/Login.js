@@ -17,6 +17,7 @@ function Login({ onLogin }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleForgotPassword = async (e) => {
     if (e) e.preventDefault(); // Handle the event if provided
@@ -31,28 +32,28 @@ function Login({ onLogin }) {
 
     try {
       console.log("Checking if email exists:", email);
-    
-    // First check if the email exists
-    const methods = await fetchSignInMethodsForEmail(auth, email);
-    console.log("Sign-in methods for email:", methods);
-    
-    // If the array is empty, no user exists with this email
-    if (methods.length === 0) {
-      console.log("No account found with this email");
-      setError("No account found with this email address.");
-      setLoading(false);
-      return; // Important: return early to prevent further execution
-    }
-    
-    // If we get here, the email exists, so send the reset email
-    console.log("Email exists, sending password reset");
-    await sendPasswordResetEmail(auth, email);
-    setResetSent(true);
-    setSuccess("Password reset email sent. Please check your inbox.");
-  } catch (error) {
-    console.error("Error in forgot password flow:", error);
-    console.error("Error code:", error.code);
-    console.error("Error message:", error.message);
+
+      // First check if the email exists
+      const methods = await fetchSignInMethodsForEmail(auth, email);
+      console.log("Sign-in methods for email:", methods);
+
+      // If the array is empty, no user exists with this email
+      if (methods.length === 0) {
+        console.log("No account found with this email");
+        setError("No account found with this email address.");
+        setLoading(false);
+        return; // Important: return early to prevent further execution
+      }
+
+      // If we get here, the email exists, so send the reset email
+      console.log("Email exists, sending password reset");
+      await sendPasswordResetEmail(auth, email);
+      setResetSent(true);
+      setSuccess("Password reset email sent. Please check your inbox.");
+    } catch (error) {
+      console.error("Error in forgot password flow:", error);
+      console.error("Error code:", error.code);
+      console.error("Error message:", error.message);
 
       // Customize error messages for password reset
       switch (error.code) {
@@ -115,6 +116,11 @@ function Login({ onLogin }) {
     }
   };
 
+  // Toggle password visibility
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className="login-container">
       {/* Floating images */}
@@ -137,13 +143,72 @@ function Login({ onLogin }) {
             placeholder="Email"
             required
           />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            required
-          />
+
+          {/* Password field with show/hide button */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr auto",
+              alignItems: "center",
+              width: "100%",
+              gap: "5px", // Small gap between input and icon
+            }}
+          >
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              required
+              style={{ width: "100%" }}
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              style={{
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                padding: "1rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {showPassword ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#666"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#666"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              )}
+            </button>
+          </div>
 
           <div
             className="login-actions"

@@ -184,30 +184,22 @@ function AppContent() {
   const { loading: chaptersLoading } = useChapters();
 
   useEffect(() => {
-    // Normal authentication flow
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setIsAuthenticated(true);
         setUser(user);
-        // Check if user is admin
         try {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
-          if (userDoc.exists() && userDoc.data().role === "admin") {
-            setIsAdmin(true);
-            // Force token refresh before navigation
-            await user.getIdToken(true);
-            // Use React Router navigation instead of window.location
-            if (window.location.pathname !== "/admin") {
-              navigate("/admin");
-            }
-          } else {
-            setIsAdmin(false);
+          const tokenResult = await user.getIdTokenResult(true); // Force refresh
+          const isAdmin = tokenResult.claims.admin === true;
+          setIsAdmin(isAdmin);
+
+          if (isAdmin && window.location.pathname !== "/admin") {
+            navigate("/admin");
           }
         } catch (error) {
-          console.error("Error checking admin status:", error);
+          console.error("Error fetching ID token claims:", error);
           setIsAdmin(false);
         }
-
       } else {
         setIsAuthenticated(false);
         setIsAdmin(false);
@@ -218,6 +210,7 @@ function AppContent() {
 
     return () => unsubscribe();
   }, [navigate]);
+
 
   const handleLogin = () => {
     // The onAuthStateChanged listener will handle setting isAuthenticated to true

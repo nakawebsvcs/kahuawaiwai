@@ -155,7 +155,7 @@ function AdminPanel() {
      if (result.data.success) {
        await sendPasswordResetEmail(auth, result.data.email);
        setSuccess(
-         "User invited successfully! A password reset email has been sent."
+         "User invited successfully! A set password email has been sent."
        );
        setNewUserEmail("");
        // Refetch users after successful creation
