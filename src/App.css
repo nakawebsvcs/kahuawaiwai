@@ -237,6 +237,15 @@
 }
 
 
+/* Slightly wider range to catch similar tablet sizes */
+@media (min-width: 480px) and (max-width: 800px) {
+  .drawer-container.open .table-of-contents-heading {
+    margin-top: 5rem !important;
+    padding-top: 1rem;
+  }
+}
+
+
 /*-- -------------------------- -->
 <--- Search Bar Styles --->
 <--- -------------------------- --*/
