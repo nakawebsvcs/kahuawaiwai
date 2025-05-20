@@ -14,8 +14,6 @@ function Page({ chapter, page }) {
     const highlightTerm = queryParams.get("highlight");
 
     if (page.content) {
-      // Log the raw content to see what we're working with
-      console.log("Raw content:", JSON.stringify(page.content));
 
       // Process the content with paragraph tags for better spacing
       let processedContent = page.content
