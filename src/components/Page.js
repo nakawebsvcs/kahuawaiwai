@@ -15,7 +15,7 @@ function Page({ chapter, page }) {
 
     if (page.content) {
 
-      // Process the content with paragraph tags for better spacing
+      // Process the content with paragraph tags for proper spacing
       let processedContent = page.content
         // First, split by double newlines and wrap in paragraph tags
         .split(/\n\n+/)
@@ -97,9 +97,9 @@ function Page({ chapter, page }) {
   const getMediaUrl = (mediaPath) => {
     if (!mediaPath) return null;
 
-    // Special case for the robot animation that's now in public/assets
+    // Special case for the robot animation in public/assets
     if (mediaPath === "../assets/kh_robot_animation.mp4") {
-      return "/assets/kh_robot_animation.mp4"; // Note the leading slash
+      return "/assets/kh_robot_animation.mp4";
     }
 
     // Handle other relative paths that might start with ../assets/
