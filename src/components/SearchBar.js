@@ -21,11 +21,15 @@ function SearchBar() {
   const navigate = useNavigate();
 
   // Function to normalize text by removing diacritical marks and 'okina
+  // Function to normalize text by removing diacritical marks and 'okina
   const normalizeText = (text) => {
     return text
       .normalize("NFD") // Decompose characters with diacriticals
       .replace(/[\u0300-\u036f]/g, "") // Remove diacritical marks
       .replace(/[''`]/g, "") // Remove Hawaiian 'okina marks (various forms)
+      .replace(/[^\w\s]/g, " ") // Replace punctuation with spaces
+      .replace(/\s+/g, " ") // Collapse multiple spaces into single spaces
+      .trim() // Remove leading/trailing spaces
       .toLowerCase();
   };
 

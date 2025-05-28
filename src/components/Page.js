@@ -24,33 +24,124 @@ function Page({ chapter, page }) {
         // Function to normalize text by removing diacritical marks and 'okina
         const normalizeText = (text) => {
           return text
-            .normalize("NFD") // Decompose characters with diacriticals
-            .replace(/[\u0300-\u036f]/g, "") // Remove diacritical marks
-            .replace(/[''`]/g, "") // Remove Hawaiian 'okina marks (various forms)
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[''`]/g, "")
+            .replace(/[^\w\s-]/g, " ") // Keep hyphens as part of words
+            .replace(/\s+/g, " ")
+            .trim()
             .toLowerCase();
         };
 
-        // Normalize the search term
-        const normalizedSearchTerm = normalizeText(highlightTerm);
+        // Split search term into individual words
+        const searchWords = highlightTerm.trim().split(/\s+/);
 
-        // Create a function to find and highlight matches
-        const highlightMatches = (text) => {
-          const words = text.split(/(\s+|[^\w\u0100-\u017F\u1EA0-\u1EF9''`]+)/); // Split on whitespace and punctuation, but preserve Hawaiian characters
+        // For each search word, find and highlight exact matches
+        searchWords.forEach((searchWord) => {
+          const normalizedSearchWord = normalizeText(searchWord);
 
-          return words
+          // Split content by word boundaries
+          const words = processedContent.split(
+            /((?:^|[\s\p{P}])['']?[\w\u0100-\u017F\u1EA0-\u1EF9''-]+(?=[\s\p{P}]|$))/gu
+          );
+
+          processedContent = words
             .map((word) => {
+              // Clean the word
+              const cleanWord = word.replace(
+                /^[\s\p{P}]*(['']?[\w\u0100-\u017F\u1EA0-\u1EF9''-]+)[\s\p{P}]*$/u,
+                "$1"
+              );
+
+              // Only check actual words
               if (
-                word.trim() &&
-                normalizeText(word).includes(normalizedSearchTerm)
+                cleanWord &&
+                /^['']?[\w\u0100-\u017F\u1EA0-\u1EF9''-]+$/.test(cleanWord)
               ) {
-                return `<mark class="search-highlight">${word}</mark>`;
+                const normalizedWord = normalizeText(cleanWord);
+                // Check for exact match
+                if (normalizedWord === normalizedSearchWord) {
+                  return word.replace(
+                    cleanWord,
+                    `<mark class="search-highlight">${cleanWord}</mark>`
+                  );
+                }
               }
               return word;
             })
             .join("");
-        };
+        });
 
-        processedContent = highlightMatches(processedContent);
+        // Additional pass: specifically handle words starting with 'okina
+        searchWords.forEach((searchWord) => {
+          const normalizedSearchWord = normalizeText(searchWord);
+          const okenRegex = new RegExp(
+            "([''][\\w\\u0100-\\u017F\\u1EA0-\\u1EF9''-]+)",
+            "g"
+          );
+
+          processedContent = processedContent.replace(okenRegex, (match) => {
+            if (
+              normalizeText(match) === normalizedSearchWord &&
+              !match.includes("<mark")
+            ) {
+              return `<mark class="search-highlight">${match}</mark>`;
+            }
+            return match;
+          });
+        });
+
+        // Additional pass: if the search term contains hyphens or spaces,
+        // also look for the "other" version (hyphenated vs spaced)
+        if (highlightTerm.includes("-") || highlightTerm.includes(" ")) {
+          // Create both versions: hyphenated and spaced
+          const hyphenatedVersion = highlightTerm.replace(/\s+/g, "-");
+          const spacedVersion = highlightTerm.replace(/-/g, " ");
+
+          // Try to highlight both versions
+          [hyphenatedVersion, spacedVersion].forEach((version) => {
+            if (version !== highlightTerm) {
+              // Don't re-process the original
+              const versionWords = version.trim().split(/[\s-]+/);
+
+              versionWords.forEach((versionWord) => {
+                const normalizedVersionWord = normalizeText(versionWord);
+
+                const words = processedContent.split(
+                  /((?:^|[\s\p{P}])['']?[\w\u0100-\u017F\u1EA0-\u1EF9''-]+(?=[\s\p{P}]|$))/gu
+                );
+
+                processedContent = words
+                  .map((word) => {
+                    const cleanWord = word.replace(
+                      /^[\s\p{P}]*(['']?[\w\u0100-\u017F\u1EA0-\u1EF9''-]+)[\s\p{P}]*$/u,
+                      "$1"
+                    );
+
+                    if (
+                      cleanWord &&
+                      /^['']?[\w\u0100-\u017F\u1EA0-\u1EF9''-]+$/.test(
+                        cleanWord
+                      )
+                    ) {
+                      const normalizedWord = normalizeText(cleanWord);
+                      if (
+                        normalizedWord === normalizedVersionWord &&
+                        !word.includes("<mark")
+                      ) {
+                        return word.replace(
+                          cleanWord,
+                          `<mark class="search-highlight">${cleanWord}</mark>`
+                        );
+                      }
+                    }
+                    return word;
+                  })
+                  .join("");
+              });
+            }
+          });
+        }
       }
 
       setHighlightedContent(processedContent);
