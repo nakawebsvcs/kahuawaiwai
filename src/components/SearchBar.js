@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Import chapter data
+import welcome from "../data/chapters/welcome.json";
 import chapter0 from "../data/chapters/chapter0.json";
 import chapter1 from "../data/chapters/chapter1.json";
 import chapter2 from "../data/chapters/chapter2.json";
@@ -19,6 +20,15 @@ function SearchBar() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Function to normalize text by removing diacritical marks and 'okina
+  const normalizeText = (text) => {
+    return text
+      .normalize("NFD") // Decompose characters with diacriticals
+      .replace(/[\u0300-\u036f]/g, "") // Remove diacritical marks
+      .replace(/[''`]/g, "") // Remove Hawaiian 'okina marks (various forms)
+      .toLowerCase();
+  };
+
   // Load chapters from JSON files when component mounts
   useEffect(() => {
     try {
@@ -26,6 +36,11 @@ function SearchBar() {
 
       // Format the JSON data to match the structure expected by the search
       const chaptersData = [
+        {
+          id: "Welcome to Kahua Waiwai",
+          title: welcome.title,
+          pages: welcome.pages,
+        },
         {
           id: "Introduction: Managing Resources Yesterday, Today, & Tomorrow",
           title: chapter0.title,
@@ -87,7 +102,7 @@ function SearchBar() {
     setSearchTerm(term);
 
     if (term.length > 2 && chapters.length > 0) {
-      // Create a more efficient search
+      // Create a more efficient search with diacritical normalization
       const results = [];
 
       chapters.forEach((chapter) => {
@@ -98,17 +113,20 @@ function SearchBar() {
           return;
         }
 
-        const termLower = term.toLowerCase();
+        // Normalize the search term
+        const normalizedSearchTerm = normalizeText(term);
 
         chapter.pages.forEach((page) => {
           const chapterTitle = chapter.title || "";
           const pageTitle = page.title || "";
           const pageContent = page.content || "";
 
-          const searchText =
-            `${chapterTitle} ${pageTitle} ${pageContent}`.toLowerCase();
+          // Create the search text and normalize it
+          const searchText = `${chapterTitle} ${pageTitle} ${pageContent}`;
+          const normalizedSearchText = normalizeText(searchText);
 
-          if (searchText.includes(termLower)) {
+          // Check if the normalized search text contains the normalized search term
+          if (normalizedSearchText.includes(normalizedSearchTerm)) {
             results.push({
               chapter,
               page,
@@ -138,7 +156,6 @@ function SearchBar() {
     setSearchTerm("");
     setSearchResults([]);
   };
-
 
   return (
     <div className="search-container position-relative">

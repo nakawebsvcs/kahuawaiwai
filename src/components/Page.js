@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useChapters } from "./ChapterContext";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 
 function Page({ chapter, page }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { getNextChapter, getPreviousChapter } = useChapters();
   const [highlightedContent, setHighlightedContent] = useState(page.content);
+  const [highlightTerm, setHighlightTerm] = useState("");
 
   // Extract search term from URL query parameters
   useEffect(() => {
@@ -19,17 +21,36 @@ function Page({ chapter, page }) {
 
       // Apply search highlighting if term exists
       if (highlightTerm) {
-        // Create a case-insensitive regular expression for the search term
-        const regex = new RegExp(
-          `(${highlightTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
-          "gi"
-        );
+        // Function to normalize text by removing diacritical marks and 'okina
+        const normalizeText = (text) => {
+          return text
+            .normalize("NFD") // Decompose characters with diacriticals
+            .replace(/[\u0300-\u036f]/g, "") // Remove diacritical marks
+            .replace(/[''`]/g, "") // Remove Hawaiian 'okina marks (various forms)
+            .toLowerCase();
+        };
 
-        // Replace occurrences with highlighted version
-        processedContent = processedContent.replace(
-          regex,
-          '<mark class="search-highlight">$1</mark>'
-        );
+        // Normalize the search term
+        const normalizedSearchTerm = normalizeText(highlightTerm);
+
+        // Create a function to find and highlight matches
+        const highlightMatches = (text) => {
+          const words = text.split(/(\s+|[^\w\u0100-\u017F\u1EA0-\u1EF9''`]+)/); // Split on whitespace and punctuation, but preserve Hawaiian characters
+
+          return words
+            .map((word) => {
+              if (
+                word.trim() &&
+                normalizeText(word).includes(normalizedSearchTerm)
+              ) {
+                return `<mark class="search-highlight">${word}</mark>`;
+              }
+              return word;
+            })
+            .join("");
+        };
+
+        processedContent = highlightMatches(processedContent);
       }
 
       setHighlightedContent(processedContent);
@@ -41,9 +62,13 @@ function Page({ chapter, page }) {
   // Custom Markdown components for styling
   const markdownComponents = {
     p: ({ children }) => <p className="mb-4">{children}</p>,
-    strong: ({ children }) => <strong className="fw-bold text-primary">{children}</strong>,
+    strong: ({ children }) => (
+      <strong className="fw-bold text-primary">{children}</strong>
+    ),
     em: ({ children }) => <em className="fst-italic text-muted">{children}</em>,
-    h1: ({ children }) => <h1 className="display-4 fw-bold mb-4">{children}</h1>,
+    h1: ({ children }) => (
+      <h1 className="display-4 fw-bold mb-4">{children}</h1>
+    ),
     h2: ({ children }) => <h2 className="h3 fw-semibold mb-3">{children}</h2>,
     h3: ({ children }) => <h3 className="h4 fw-medium mb-2">{children}</h3>,
   };
@@ -188,7 +213,10 @@ function Page({ chapter, page }) {
       <h4 style={{ padding: "1rem 0", color: "#03aa22" }}>{page.title}</h4>
       {renderMedia()}
       <div className="mt-3">
-        <ReactMarkdown components={markdownComponents}>
+        <ReactMarkdown
+          components={markdownComponents}
+          rehypePlugins={[rehypeRaw]}
+        >
           {highlightedContent}
         </ReactMarkdown>
       </div>
