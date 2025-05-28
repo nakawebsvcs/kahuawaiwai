@@ -10,7 +10,8 @@ function Footer() {
             © {new Date().getFullYear()} Hawaiian Community Assets
           </p>
           <p className="footer-text small">
-            Developed by Nakamura Web Services
+            Developed by
+            <a href="https://nakamurawebservices.com" target="_blank"> Nakamura Web Services</a>
           </p>
         </div>
       </Container>

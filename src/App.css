@@ -95,8 +95,25 @@
   padding: 2rem;
   margin-top: 9.5rem;
   margin-bottom: 3rem;
+  font-size: 1.2rem;
+  line-height: 1.6;
 }
 
+.content-area em,
+.content-area .fst-italic {
+  color: #000 !important;
+  font-style: italic;
+}
+
+.content-area strong,
+.content-area .fw-bold {
+  color: #000 !important;
+}
+
+.content-area h2,
+.content-area h3 {
+  font-size: 1.7rem;
+}
 
 .chapter-link {
   text-decoration: none;
@@ -303,6 +320,19 @@
   font-style: normal;
   margin-top: 1.2rem;
   margin-bottom: 0.5rem;
+}
+
+.footer-text a {
+  color: inherit !important;
+  text-decoration: none !important;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.footer-text a:hover {
+  color: inherit !important;
+  text-decoration: underline;
 }
 
 .footer-text:last-child {

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 // Import chapter data
+import welcome from "../data/chapters/welcome.json";
 import chapter0 from "../data/chapters/chapter0.json";
 import chapter1 from "../data/chapters/chapter1.json";
 import chapter2 from "../data/chapters/chapter2.json";
@@ -28,6 +29,11 @@ export function ChapterProvider({ children }) {
 
       // Format JSON data to match the structure expected by the app
       const chaptersWithPages = [
+        {
+          id: "Welcome to Kahua Waiwai",
+          title: welcome.title,
+          pages: welcome.pages,
+        },
         {
           id: "Introduction: Managing Resources Yesterday, Today, & Tomorrow",
           title: chapter0.title,

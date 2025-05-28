@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useChapters } from "./ChapterContext";
+import ReactMarkdown from "react-markdown";
 
 function Page({ chapter, page }) {
   const location = useLocation();
@@ -14,17 +15,9 @@ function Page({ chapter, page }) {
     const highlightTerm = queryParams.get("highlight");
 
     if (page.content) {
+      let processedContent = page.content;
 
-      // Process the content with paragraph tags for proper spacing
-      let processedContent = page.content
-        // First, split by double newlines and wrap in paragraph tags
-        .split(/\n\n+/)
-        .map((para) => `<p>${para}</p>`)
-        .join("")
-        // Then handle any remaining single newlines within paragraphs
-        .replace(/\n/g, "<br>");
-
-      // Then highlight the search term if it exists
+      // Apply search highlighting if term exists
       if (highlightTerm) {
         // Create a case-insensitive regular expression for the search term
         const regex = new RegExp(
@@ -35,7 +28,7 @@ function Page({ chapter, page }) {
         // Replace occurrences with highlighted version
         processedContent = processedContent.replace(
           regex,
-          '<span class="search-highlight">$1</span>'
+          '<mark class="search-highlight">$1</mark>'
         );
       }
 
@@ -44,6 +37,16 @@ function Page({ chapter, page }) {
       setHighlightedContent("");
     }
   }, [location.search, page.content]);
+
+  // Custom Markdown components for styling
+  const markdownComponents = {
+    p: ({ children }) => <p className="mb-4">{children}</p>,
+    strong: ({ children }) => <strong className="fw-bold text-primary">{children}</strong>,
+    em: ({ children }) => <em className="fst-italic text-muted">{children}</em>,
+    h1: ({ children }) => <h1 className="display-4 fw-bold mb-4">{children}</h1>,
+    h2: ({ children }) => <h2 className="h3 fw-semibold mb-3">{children}</h2>,
+    h3: ({ children }) => <h3 className="h4 fw-medium mb-2">{children}</h3>,
+  };
 
   // Scroll to top when page changes
   useEffect(() => {
@@ -182,12 +185,13 @@ function Page({ chapter, page }) {
   return (
     <div style={{ marginTop: "4rem" }}>
       <h2>{chapter.title}</h2>
-      <h4 style={{ padding: "1rem 0" }}>{page.title}</h4>
+      <h4 style={{ padding: "1rem 0", color: "#03aa22" }}>{page.title}</h4>
       {renderMedia()}
-      <div
-        className="mt-3"
-        dangerouslySetInnerHTML={{ __html: highlightedContent }}
-      />
+      <div className="mt-3">
+        <ReactMarkdown components={markdownComponents}>
+          {highlightedContent}
+        </ReactMarkdown>
+      </div>
       {/* Navigation links */}
       <div className="navigation-links mt-4 d-flex justify-content-between">
         <a
