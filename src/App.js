@@ -17,8 +17,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "./App.css";
 import Login from "./components/Login";
 import SearchBar from "./components/SearchBar";
-import { db, auth } from "./firebase";
-import { getDoc, doc } from "firebase/firestore";
+import { auth } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import AdminPanel from "./components/AdminPanel";
 

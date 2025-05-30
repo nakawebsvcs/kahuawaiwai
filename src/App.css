@@ -465,17 +465,17 @@
 
 @keyframes gentle-float-down {
   0% { transform: translate(0, 0) rotate(0deg); }
-  25% { transform: translate(15px, 20px) rotate(2deg); }  /* Move more down than sideways */
+  25% { transform: translate(15px, 20px) rotate(2deg); }  
   50% { transform: translate(5px, 10px) rotate(-1deg); }
-  75% { transform: translate(-10px, 15px) rotate(1deg); } /* Still emphasize downward movement */
+  75% { transform: translate(-10px, 15px) rotate(1deg); } 
   100% { transform: translate(0, 0) rotate(0deg); }
 }
 
 @keyframes gentle-float-up {
   0% { transform: translate(0, 0) rotate(0deg); }
-  25% { transform: translate(15px, -20px) rotate(2deg); }  /* Move more up than sideways */
+  25% { transform: translate(15px, -20px) rotate(2deg); }  
   50% { transform: translate(5px, -10px) rotate(-1deg); }
-  75% { transform: translate(-10px, -15px) rotate(1deg); } /* Still emphasize upward movement */
+  75% { transform: translate(-10px, -15px) rotate(1deg); }
   100% { transform: translate(0, 0) rotate(0deg); }
 }
 
@@ -829,7 +829,6 @@
 }
 
 @media (max-width: 480px) {
-  /* Existing small screen styles... */
   
   /* Admin panel specific adjustments for very small screens */
   .admin-panel {

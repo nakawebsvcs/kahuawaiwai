@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { getFunctions, httpsCallable } from "firebase/functions";
+import { httpsCallable } from "firebase/functions";
 import { functions, auth } from "../firebase";
-import { signOut, getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { signOut, sendPasswordResetEmail } from "firebase/auth";
 import {
   Container,
   Row,

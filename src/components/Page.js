@@ -9,7 +9,6 @@ function Page({ chapter, page }) {
   const navigate = useNavigate();
   const { getNextChapter, getPreviousChapter } = useChapters();
   const [highlightedContent, setHighlightedContent] = useState(page.content);
-  const [highlightTerm, setHighlightTerm] = useState("");
 
   // Extract search term from URL query parameters
   useEffect(() => {

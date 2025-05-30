@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import {
   signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  fetchSignInMethodsForEmail
+  sendPasswordResetEmail
 } from "firebase/auth";
 import { auth } from "../firebase";
 import girlLanai from "../assets/girl-lanai-transparent.png";
@@ -13,14 +12,13 @@ import haeHawaii from "../assets/hae-hawaii.png";
 function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [resetSent, setResetSent] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleForgotPassword = async (e) => {
-    if (e) e.preventDefault(); // Handle the event if provided
+    if (e) e.preventDefault();
 
     if (!email) {
       setError("Please enter your email address");
@@ -31,25 +29,13 @@ function Login({ onLogin }) {
     setError(null);
 
     try {
-      console.log("Checking if email exists:", email);
+      console.log("Sending password reset email to:", email);
 
-      // First check if the email exists
-      const methods = await fetchSignInMethodsForEmail(auth, email);
-      console.log("Sign-in methods for email:", methods);
-
-      // If the array is empty, no user exists with this email
-      if (methods.length === 0) {
-        console.log("No account found with this email");
-        setError("No account found with this email address.");
-        setLoading(false);
-        return; // Important: return early to prevent further execution
-      }
-
-      // If we get here, the email exists, so send the reset email
-      console.log("Email exists, sending password reset");
+      // Send the reset email directly - Firebase handles email validation
       await sendPasswordResetEmail(auth, email);
-      setResetSent(true);
-      setSuccess("Password reset email sent. Please check your inbox.");
+      setSuccess(
+        "If an account exists with this email, a password reset link has been sent. Please check your inbox."
+      );
     } catch (error) {
       console.error("Error in forgot password flow:", error);
       console.error("Error code:", error.code);
@@ -59,9 +45,6 @@ function Login({ onLogin }) {
       switch (error.code) {
         case "auth/invalid-email":
           setError("Please enter a valid email address.");
-          break;
-        case "auth/user-not-found":
-          setError("No account found with this email address.");
           break;
         case "auth/too-many-requests":
           setError("Too many requests. Please try again later.");
@@ -73,6 +56,7 @@ function Login({ onLogin }) {
       setLoading(false);
     }
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
